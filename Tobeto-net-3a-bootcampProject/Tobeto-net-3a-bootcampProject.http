@@ -1,0 +1,6 @@
+@Tobeto_net_3a_bootcampProject_HostAddress = http://localhost:5062
+
+GET {{Tobeto_net_3a_bootcampProject_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
