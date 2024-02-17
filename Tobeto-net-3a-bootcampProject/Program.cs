@@ -3,13 +3,12 @@ using Business.Concretes;
 using DataAccess;
 using DataAccess.Abstracts;
 using DataAccess.Concretes.Repositories;
+using Business;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 //deneme DI
-builder.Services.AddScoped<IUserService, UserManager>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
 // Add services to the container.
@@ -19,8 +18,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//Sql Configuration
+//Sql Configuration and DI 
 builder.Services.AddDataAccessServices(builder.Configuration);
+builder.Services.AddBusinessServices();
 
 var app = builder.Build();
 

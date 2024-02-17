@@ -1,6 +1,8 @@
 ﻿using Business.Abstracts;
+using Business.Concretes;
+using Business.Requests.Employee;
+using Business.Requests.Instructor;
 using Business.Requests.User;
-using Entities.Concretes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,39 +10,39 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class InstructorController : ControllerBase
     {
-        private readonly IUserService _userManager;
+        private readonly IInstructorService _instructorManager;
 
-        public UserController(IUserService userManager)
+        public InstructorController(IInstructorService instructorManager)
         {
-            _userManager = userManager;
+            _instructorManager = instructorManager;
         }
 
         [HttpPost("Add")]
-        public async Task<IActionResult> Add(CreateUserRequest request)
+        public async Task<IActionResult> Add(CreateInstructorRequest request)
         {
-            await _userManager.AddAsync(request);
+            await _instructorManager.AddAsync(request);
             return Ok();
         }
 
         [HttpDelete("Delete")]
-        public async Task<IActionResult> Delete(DeleteUserRequest request)
+        public async Task<IActionResult> Delete(DeleteInstructorRequest request)
         {
-            var user = await _userManager.GetByIdAsync(request.Id);
+            var user = await _instructorManager.GetByIdAsync(request.Id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            await _userManager.DeleteAsync(request);
+            await _instructorManager.DeleteAsync(request);
             return Ok();
         }
 
         [HttpGet("GetById")]
         public async Task<IActionResult> GetById(int id)
         {
-            var user = await _userManager.GetByIdAsync(id);
+            var user = await _instructorManager.GetByIdAsync(id);
             if (user.Id == 0 && user == null)
             {
                 return NotFound();
@@ -52,25 +54,19 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var users = await _userManager.GetAll();
+            var users = await _instructorManager.GetAll();
             return Ok(users);
         }
 
         [HttpPut("Update")]
-        public async Task<IActionResult> Update(UpdateUserRequest request)
+        public async Task<IActionResult> Update(UpdateInstructorRequest request)
         {
-            if (request.Id == null)
+            if (request.Id == 0)
             {
                 return BadRequest();
             }
 
-            //var existingUser = await _userManager.Get(id);
-            //if (existingUser == null)
-            //{
-            //    return NotFound();
-            //}
-
-            await _userManager.UpdateAsync(request);
+            await _instructorManager.UpdateAsync(request);
             return Ok();
         }
     }

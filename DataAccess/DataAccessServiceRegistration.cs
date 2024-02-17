@@ -1,4 +1,6 @@
-﻿using DataAccess.Concretes.EntityFramework;
+﻿using DataAccess.Abstracts;
+using DataAccess.Concretes.EntityFramework;
+using DataAccess.Concretes.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +18,11 @@ public static class DataAccessServiceRegistration
     {
         services.AddDbContext<TobetoBootCampProjectContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IInstructorRepository, InstructorRepository>();
+        services.AddScoped<IApplicantRepository, ApplicantRepository>();
+        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
         return services;
     }
