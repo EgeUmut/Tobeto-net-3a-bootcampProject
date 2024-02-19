@@ -35,7 +35,7 @@ public class InstructorManager:IInstructorService
         instructor.Password = request.Password;
         instructor.DateOfBirth = request.DateOfBirth;
 
-        await _ınstructorRepository.Add(instructor);
+        await _ınstructorRepository.AddAsync(instructor);
         CreateInstructorResponse response = new CreateInstructorResponse();
         response.FirstName = instructor.FirstName;
         response.LastName = instructor.LastName;
@@ -51,16 +51,16 @@ public class InstructorManager:IInstructorService
 
     public async Task DeleteAsync(DeleteInstructorRequest request)
     {
-        var item = await _ınstructorRepository.Get(p => p.Id == request.Id);
+        var item = await _ınstructorRepository.GetAsync(p => p.Id == request.Id);
         if (item != null)
         {
-            await _ınstructorRepository.Delete(item);
+            await _ınstructorRepository.DeleteAsync(item);
         }
     }
 
     public async Task<List<GetAllInstructorResponse>> GetAll()
     {
-        var list = await _ınstructorRepository.GetAll();
+        var list = await _ınstructorRepository.GetAllAsync();
         var responseList = new List<GetAllInstructorResponse>();
 
         foreach (var item in list)
@@ -81,7 +81,7 @@ public class InstructorManager:IInstructorService
 
     public async Task<GetByIdInstructorResponse> GetByIdAsync(int id)
     {
-        var item = await _ınstructorRepository.Get(p => p.Id == id);
+        var item = await _ınstructorRepository.GetAsync(p => p.Id == id);
         GetByIdInstructorResponse response = new GetByIdInstructorResponse();
         if (item != null)
         {
@@ -98,7 +98,7 @@ public class InstructorManager:IInstructorService
 
     public async Task<UpdateInstructorResponse> UpdateAsync(UpdateInstructorRequest request)
     {
-        var item = await _ınstructorRepository.Get(p => p.Id == request.Id);
+        var item = await _ınstructorRepository.GetAsync(p => p.Id == request.Id);
         UpdateInstructorResponse response = new UpdateInstructorResponse();
         if (item != null)
         {
@@ -110,7 +110,7 @@ public class InstructorManager:IInstructorService
             item.NationalIdentity = request.NationalIdentity;
             item.Password = request.Password;
             item.DateOfBirth = request.DateOfBirth;
-            await _ınstructorRepository.Update(item);
+            await _ınstructorRepository.UpdateAsync(item);
 
 
             response.FirstName = item.FirstName;

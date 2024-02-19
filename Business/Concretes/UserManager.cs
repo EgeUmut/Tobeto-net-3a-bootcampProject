@@ -30,7 +30,7 @@ public class UserManager : IUserService
         user.Password = request.Password;
         user.DateOfBirth = request.DateOfBirth;
 
-        await _userRepository.Add(user);
+        await _userRepository.AddAsync(user);
         CreateUserResponse response = new CreateUserResponse();
         response.FirstName = user.FirstName;
         response.LastName = user.LastName;
@@ -45,17 +45,17 @@ public class UserManager : IUserService
 
     public async Task DeleteAsync(DeleteUserRequest request)
     {
-        var item = await _userRepository.Get(p => p.Id == request.Id);
+        var item = await _userRepository.GetAsync(p => p.Id == request.Id);
         if (item != null)
         {
-            await _userRepository.Delete(item);
+            await _userRepository.DeleteAsync(item);
         }
     }
 
     public async Task<List<GetAllUserResponse>> GetAll()
     {
 
-        var list = await _userRepository.GetAll();
+        var list = await _userRepository.GetAllAsync();
         var responseList = new List<GetAllUserResponse>();
 
         foreach (var item in list)
@@ -75,7 +75,7 @@ public class UserManager : IUserService
 
     public async Task<GetByIdUserResponse> GetByIdAsync(int id)
     {
-        var item = await _userRepository.Get(p => p.Id == id);
+        var item = await _userRepository.GetAsync(p => p.Id == id);
         GetByIdUserResponse response = new GetByIdUserResponse();
         if (item != null)
         {
@@ -91,7 +91,7 @@ public class UserManager : IUserService
 
     public async Task<UpdateUserResponse> UpdateAsync(UpdateUserRequest request)
     {
-        var item = await _userRepository.Get(p => p.Id == request.Id);
+        var item = await _userRepository.GetAsync(p => p.Id == request.Id);
         UpdateUserResponse response = new UpdateUserResponse();
         if (item != null)
         {
@@ -102,7 +102,7 @@ public class UserManager : IUserService
             item.NationalIdentity = request.NationalIdentity;
             item.Password = request.Password;
             item.DateOfBirth = request.DateOfBirth;
-            await _userRepository.Update(item);
+            await _userRepository.UpdateAsync(item);
 
 
             response.FirstName = item.FirstName;

@@ -34,7 +34,7 @@ public class ApplicantManager : IApplicantService
         applicant.Password = request.Password;
         applicant.DateOfBirth = request.DateOfBirth;
 
-        await _applicantRepository.Add(applicant);
+        await _applicantRepository.AddAsync(applicant);
         CreateApplicantResponse response = new CreateApplicantResponse();
         response.FirstName = applicant.FirstName;
         response.LastName = applicant.LastName;
@@ -50,16 +50,16 @@ public class ApplicantManager : IApplicantService
 
     public async Task DeleteAsync(DeleteApplicantRequest request)
     {
-        var item = await _applicantRepository.Get(p => p.Id == request.Id);
+        var item = await _applicantRepository.GetAsync(p => p.Id == request.Id);
         if (item != null)
         {
-            await _applicantRepository.Delete(item);
+            await _applicantRepository.DeleteAsync(item);
         }
     }
 
     public async Task<List<GetAllApplicantResponse>> GetAll()
     {
-        var list = await _applicantRepository.GetAll();
+        var list = await _applicantRepository.GetAllAsync();
         var responseList = new List<GetAllApplicantResponse>();
 
         foreach (var item in list)
@@ -80,7 +80,7 @@ public class ApplicantManager : IApplicantService
 
     public async Task<GetByIdApplicantResponse> GetByIdAsync(int id)
     {
-        var item = await _applicantRepository.Get(p => p.Id == id);
+        var item = await _applicantRepository.GetAsync(p => p.Id == id);
         GetByIdApplicantResponse response = new GetByIdApplicantResponse();
         if (item != null)
         {
@@ -97,7 +97,7 @@ public class ApplicantManager : IApplicantService
 
     public async Task<UpdateApplicantResponse> UpdateAsync(UpdateApplicantRequest request)
     {
-        var item = await _applicantRepository.Get(p => p.Id == request.Id);
+        var item = await _applicantRepository.GetAsync(p => p.Id == request.Id);
         UpdateApplicantResponse response = new UpdateApplicantResponse();
         if (item != null)
         {
@@ -109,7 +109,7 @@ public class ApplicantManager : IApplicantService
             item.NationalIdentity = request.NationalIdentity;
             item.Password = request.Password;
             item.DateOfBirth = request.DateOfBirth;
-            await _applicantRepository.Update(item);
+            await _applicantRepository.UpdateAsync(item);
 
 
             response.FirstName = item.FirstName;

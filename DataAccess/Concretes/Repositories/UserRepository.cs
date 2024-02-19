@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concretes.Repositories;
 
-public class UserRepository : AsyncRepositoryBase<User, TobetoBootCampProjectContext, int>, IUserRepository
+public class UserRepository : RepositoryBase<User, TobetoBootCampProjectContext, int>, IUserRepository
 {
 
     //protected TobetoBootCampProjectContext _context;

@@ -36,7 +36,7 @@ public class Employeemanager:IEmployeeService
         applicant.Password = request.Password;
         applicant.DateOfBirth = request.DateOfBirth;
 
-        await _employeeRepository.Add(applicant);
+        await _employeeRepository.AddAsync(applicant);
         CreateEmployeeResponse response = new CreateEmployeeResponse();
         response.FirstName = applicant.FirstName;
         response.LastName = applicant.LastName;
@@ -52,16 +52,16 @@ public class Employeemanager:IEmployeeService
 
     public async Task DeleteAsync(DeleteEmployeeRequest request)
     {
-        var item = await _employeeRepository.Get(p => p.Id == request.Id);
+        var item = await _employeeRepository.GetAsync(p => p.Id == request.Id);
         if (item != null)
         {
-            await _employeeRepository.Delete(item);
+            await _employeeRepository.DeleteAsync(item);
         }
     }
 
     public async Task<List<GetAllEmployeeResponse>> GetAll()
     {
-        var list = await _employeeRepository.GetAll();
+        var list = await _employeeRepository.GetAllAsync();
         var responseList = new List<GetAllEmployeeResponse>();
 
         foreach (var item in list)
@@ -82,7 +82,7 @@ public class Employeemanager:IEmployeeService
 
     public async Task<GetByIdEmployeeResponse> GetByIdAsync(int id)
     {
-        var item = await _employeeRepository.Get(p => p.Id == id);
+        var item = await _employeeRepository.GetAsync(p => p.Id == id);
         GetByIdEmployeeResponse response = new GetByIdEmployeeResponse();
         if (item != null)
         {
@@ -99,7 +99,7 @@ public class Employeemanager:IEmployeeService
 
     public async Task<UpdateEmployeeResponse> UpdateAsync(UpdateEmployeeRequest request)
     {
-        var item = await _employeeRepository.Get(p => p.Id == request.Id);
+        var item = await _employeeRepository.GetAsync(p => p.Id == request.Id);
         UpdateEmployeeResponse response = new UpdateEmployeeResponse();
         if (item != null)
         {
@@ -111,7 +111,7 @@ public class Employeemanager:IEmployeeService
             item.NationalIdentity = request.NationalIdentity;
             item.Password = request.Password;
             item.DateOfBirth = request.DateOfBirth;
-            await _employeeRepository.Update(item);
+            await _employeeRepository.UpdateAsync(item);
 
 
             response.FirstName = item.FirstName;

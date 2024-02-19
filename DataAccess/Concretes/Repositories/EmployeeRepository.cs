@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concretes.Repositories;
 
-public class EmployeeRepository : AsyncRepositoryBase<Employee, TobetoBootCampProjectContext, int>, IEmployeeRepository
+public class EmployeeRepository : RepositoryBase<Employee, TobetoBootCampProjectContext, int>, IEmployeeRepository
 {
     public EmployeeRepository(TobetoBootCampProjectContext context) : base(context)
     {
