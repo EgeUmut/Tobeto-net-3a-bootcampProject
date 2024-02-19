@@ -1,6 +1,6 @@
 ﻿using Core.DataAccess;
 using DataAccess.Abstracts;
-using DataAccess.Concretes.EntityFramework;
+using DataAccess.Concretes.EntityFramework.Context;
 using Entities.Concretes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concretes.Repositories;
 
-public class UserRepository : BaseRepository<User, TobetoBootCampProjectContext, int>, IUserRepository
+public class UserRepository : AsyncRepositoryBase<User, TobetoBootCampProjectContext, int>, IUserRepository
 {
 
     //protected TobetoBootCampProjectContext _context;

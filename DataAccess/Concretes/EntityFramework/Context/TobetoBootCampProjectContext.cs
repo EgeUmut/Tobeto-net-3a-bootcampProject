@@ -8,14 +8,14 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Concretes.EntityFramework;
+namespace DataAccess.Concretes.EntityFramework.Context;
 
-public class TobetoBootCampProjectContext:DbContext
+public class TobetoBootCampProjectContext : DbContext
 {
 
     public TobetoBootCampProjectContext()
     {
-        
+
     }
     public TobetoBootCampProjectContext(DbContextOptions options, IConfiguration configuration) : base(options)
     {
@@ -24,6 +24,12 @@ public class TobetoBootCampProjectContext:DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Applicant>().ToTable("Applicants");
+        modelBuilder.Entity<Employee>().ToTable("Employees");
+        modelBuilder.Entity<Instructor>().ToTable("Instructors");
+        modelBuilder.Entity<User>().ToTable("Users");
+
+
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         foreach (var reletioship in modelBuilder.Model.GetEntityTypes().SelectMany(p => p.GetForeignKeys()))
         {

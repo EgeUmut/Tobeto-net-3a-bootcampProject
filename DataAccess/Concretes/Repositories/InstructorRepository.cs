@@ -1,6 +1,6 @@
 ﻿using Core.DataAccess;
 using DataAccess.Abstracts;
-using DataAccess.Concretes.EntityFramework;
+using DataAccess.Concretes.EntityFramework.Context;
 using Entities.Concretes;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concretes.Repositories;
 
-public class InstructorRepository : BaseRepository<Instructor, TobetoBootCampProjectContext, int>, IInstructorRepository
+public class InstructorRepository : AsyncRepositoryBase<Instructor, TobetoBootCampProjectContext, int>, IInstructorRepository
 {
     public InstructorRepository(TobetoBootCampProjectContext context) : base(context)
     {

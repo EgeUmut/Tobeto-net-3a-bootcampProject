@@ -10,17 +10,17 @@ using System.Threading.Tasks;
 
 namespace Entities.Concretes;
 
-[Table("User")]
+//[Table("User")]
 public class User:BaseEntity<int>
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public DateTime DateOfBirth { get; set; }
     public string NationalIdentity { get; set; }
-    [DisplayName("Email")]
+    //[DisplayName("Email")]
     [EmailAddress]
     public string Email { get; set; }
-    [DataType(DataType.Password)]
+    //[DataType(DataType.Password)]
     [Required]
     public string Password { get; set; }
 }
