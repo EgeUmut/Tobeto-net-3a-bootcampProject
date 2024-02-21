@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,8 +14,9 @@ public static class BusinessServiceRegistration
 {
     public static IServiceCollection AddBusinessServices(this IServiceCollection services)
     {
-        //Async Services
-        //services.AddScoped<IAsyncBrandService, AsyncBrandManager>();
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+        //Services
         services.AddScoped<IUserService, UserManager>();
         services.AddScoped<IInstructorService, InstructorManager>();
         services.AddScoped<IApplicantService, ApplicantManager>();

@@ -24,17 +24,25 @@ public class TobetoBootCampProjectContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Applicant>().ToTable("Applicants");
-        modelBuilder.Entity<Employee>().ToTable("Employees");
-        modelBuilder.Entity<Instructor>().ToTable("Instructors");
-        modelBuilder.Entity<User>().ToTable("Users");
+
 
 
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         foreach (var reletioship in modelBuilder.Model.GetEntityTypes().SelectMany(p => p.GetForeignKeys()))
         {
-            reletioship.DeleteBehavior = DeleteBehavior.Cascade;
+            reletioship.DeleteBehavior = DeleteBehavior.NoAction;
         }
+        
+
+        modelBuilder.Entity<Applicant>().ToTable("Applicants");
+        modelBuilder.Entity<Employee>().ToTable("Employees");
+        modelBuilder.Entity<Instructor>().ToTable("Instructors");
+        modelBuilder.Entity<User>().ToTable("Users");
+
+        modelBuilder.Entity<Application>().ToTable("Applications");
+        modelBuilder.Entity<ApplicationState>().ToTable("ApplicationStates");
+        modelBuilder.Entity<Bootcamp>().ToTable("Bootcamps");
+        modelBuilder.Entity<BootcampState>().ToTable("BootcampStates");
     }
 
     protected IConfiguration Configuration { get; set; }
@@ -43,4 +51,8 @@ public class TobetoBootCampProjectContext : DbContext
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Instructor> Instructors { get; set; }
     public DbSet<Applicant> Applicants { get; set; }
+    public DbSet<Application> Applications { get; set; }
+    public DbSet<ApplicationState> ApplicationStates { get; set; }
+    public DbSet<Bootcamp> Bootcamps { get; set; }
+    public DbSet<BootcampState> BootcampStates { get; set; }
 }
