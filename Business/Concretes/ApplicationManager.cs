@@ -25,16 +25,16 @@ public class ApplicationManager : IApplicationService
         _mapper = mapper;
     }
 
-    public async Task<IResult> AddAsync(CreateApplicationRequest request)
+    public async Task<IDataResult<CreateApplicationResponse>> AddAsync(CreateApplicationRequest request)
     {
         Application application = _mapper.Map<Application>(request);
         await _applicationRepository.AddAsync(application);
-        return new SuccessResult("Added Succesfuly");
+        return new SuccessDataResult<CreateApplicationResponse>("Added Succesfuly");
     }
 
     public async Task<IResult> DeleteAsync(int request)
     {
-        var item = await _applicationRepository.GetAsync(p=>p.Id == request);
+        var item = await _applicationRepository.GetAsync(p => p.Id == request);
         if (item != null)
         {
             await _applicationRepository.DeleteAsync(item);
@@ -46,15 +46,15 @@ public class ApplicationManager : IApplicationService
 
     public async Task<IDataResult<List<GetAllApplicationResponse>>> GetAllAsync()
     {
-        var list = await _applicationRepository.GetAllAsync(include:x=>x.Include(p=>p.Applicant).Include(p=>p.Bootcamp).Include(p=>p.ApplicationState));
+        var list = await _applicationRepository.GetAllAsync(include: x => x.Include(p => p.Applicant).Include(p => p.Bootcamp).Include(p => p.ApplicationState));
         List<GetAllApplicationResponse> responseList = _mapper.Map<List<GetAllApplicationResponse>>(list);
-        return new SuccessDataResult<List<GetAllApplicationResponse>>(responseList, "Listed Succesfuly.");
+        return new SuccessDataResult<List<GetAllApplicationResponse>>(responseList,"Listed Succesfuly.");
     }
 
     public async Task<IDataResult<GetByIdApplicationResponse>> GetByIdAsync(int id)
     {
         var list = await _applicationRepository.GetAllAsync(include: x => x.Include(p => p.Applicant).Include(p => p.Bootcamp).Include(p => p.ApplicationState));
-        var item = list.Where(p=>p.Id==id).FirstOrDefault();
+        var item = list.Where(p => p.Id == id).FirstOrDefault();
         GetByIdApplicationResponse response = _mapper.Map<GetByIdApplicationResponse>(item);
         if (item != null)
         {

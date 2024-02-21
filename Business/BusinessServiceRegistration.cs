@@ -22,6 +22,8 @@ public static class BusinessServiceRegistration
         services.AddScoped<IApplicantService, ApplicantManager>();
         services.AddScoped<IEmployeeService, Employeemanager>();
 
+        services.AddScoped<IApplicationService, ApplicationManager>();
+
         return services;
     }
 }

@@ -11,7 +11,7 @@ namespace Business.Abstracts;
 
 public interface IApplicationService
 {
-    public Task<IResult> AddAsync(CreateApplicationRequest request);
+    public Task<IDataResult<CreateApplicationResponse>> AddAsync(CreateApplicationRequest request);
     public Task<UpdateApplicationResponse> UpdateAsync(UpdateApplicationRequest request);
     public Task<IResult> DeleteAsync(int request);
     public Task<IDataResult<List<GetAllApplicationResponse>>> GetAllAsync();
