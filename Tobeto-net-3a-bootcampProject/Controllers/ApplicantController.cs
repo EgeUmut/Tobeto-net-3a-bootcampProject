@@ -20,52 +20,33 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
         [HttpPost("Add")]
         public async Task<IActionResult> Add(CreateApplicantRequest request)
         {
-            await _applicantManager.AddAsync(request);
-            return Ok();
+            return Ok(await _applicantManager.AddAsync(request));
         }
 
         [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(DeleteApplicantRequest request)
         {
-            var user = await _applicantManager.GetByIdAsync(request.Id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            await _applicantManager.DeleteAsync(request);
-            return Ok();
+            return Ok(await _applicantManager.DeleteAsync(request));
         }
 
         [HttpGet("GetById")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(GetByIdApplicantRequest request)
         {
-            var user = await _applicantManager.GetByIdAsync(id);
-            if (user.Id == 0 && user == null)
-            {
-                return NotFound();
-            }
-
+            var user = await _applicantManager.GetByIdAsync(request);
             return Ok(user);
         }
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var users = await _applicantManager.GetAll();
+            var users = await _applicantManager.GetAllAsync();
             return Ok(users);
         }
 
         [HttpPut("Update")]
         public async Task<IActionResult> Update(UpdateApplicantRequest request)
         {
-            if (request.Id == 0)
-            {
-                return BadRequest();
-            }
-
-            await _applicantManager.UpdateAsync(request);
-            return Ok();
+            return Ok(await _applicantManager.UpdateAsync(request));
         }
     }
 }

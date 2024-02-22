@@ -56,7 +56,7 @@ public class BootcampManager:IBootcampService
 
     public async Task<IDataResult<GetByIdBootcampResponse>> GetByIdAsync(GetByIdBootcampRequest request)
     {
-        var item = await _bootcampRepository.GetAsync(p => p.Id == request.Id);
+        var item = await _bootcampRepository.GetAsync(p => p.Id == request.Id, include: x => x.Include(p => p.Instructor).Include(p => p.BootcampState));
         GetByIdBootcampResponse response = _mapper.Map<GetByIdBootcampResponse>(item);
 
         if (item != null)

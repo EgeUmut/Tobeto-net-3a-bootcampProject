@@ -1,10 +1,12 @@
-﻿using Business.Abstracts;
+﻿using AutoMapper;
+using Business.Abstracts;
 using Business.Requests.Applicant;
 using Business.Requests.Employee;
 using Business.Requests.User;
 using Business.Responses.Applicant;
 using Business.Responses.Employee;
 using Business.Responses.User;
+using Core.Utilities.Results;
 using DataAccess.Abstracts;
 using DataAccess.Concretes.Repositories;
 using Entities.Concretes;
@@ -19,110 +21,67 @@ namespace Business.Concretes;
 public class Employeemanager:IEmployeeService
 {
     private readonly IEmployeeRepository _employeeRepository;
+    private readonly IMapper _mapper;
 
-    public Employeemanager(IEmployeeRepository employeeRepository)
+    public Employeemanager(IEmployeeRepository employeeRepository, IMapper mapper)
     {
         _employeeRepository = employeeRepository;
+        _mapper = mapper;
     }
 
-    public async Task<CreateEmployeeResponse> AddAsync(CreateEmployeeRequest request)
+    public async Task<IDataResult<CreateEmployeeResponse>> AddAsync(CreateEmployeeRequest request)
     {
-        Employee applicant = new Employee();
-        applicant.FirstName = request.FirstName;
-        applicant.LastName = request.LastName;
-        applicant.Email = request.Email;
-        applicant.Position = request.Position;
-        applicant.NationalIdentity = request.NationalIdentity;
-        applicant.Password = request.Password;
-        applicant.DateOfBirth = request.DateOfBirth;
+        Employee employee = _mapper.Map<Employee>(request);
+        await _employeeRepository.AddAsync(employee);
+        CreateEmployeeResponse response = _mapper.Map<CreateEmployeeResponse>(employee);
 
-        await _employeeRepository.AddAsync(applicant);
-        CreateEmployeeResponse response = new CreateEmployeeResponse();
-        response.FirstName = applicant.FirstName;
-        response.LastName = applicant.LastName;
-        response.Email = applicant.Email;
-        response.Position = applicant.Position;
-        response.NationalIdentity = applicant.NationalIdentity;
-        response.Password = applicant.Password;
-        response.DateOfBirth = applicant.DateOfBirth;
-        response.CreateDate = applicant.CreateDate;
-
-        return response;
+        return new SuccessDataResult<CreateEmployeeResponse>(response, "Added Succesfuly");
     }
 
-    public async Task DeleteAsync(DeleteEmployeeRequest request)
+    public async Task<IResult> DeleteAsync(DeleteEmployeeRequest request)
     {
         var item = await _employeeRepository.GetAsync(p => p.Id == request.Id);
         if (item != null)
         {
             await _employeeRepository.DeleteAsync(item);
+            return new SuccessResult("Deleted Succesfuly");
         }
+        return new ErrorResult("Delete Failed!");
     }
 
-    public async Task<List<GetAllEmployeeResponse>> GetAll()
+    public async Task<IDataResult<List<GetAllEmployeeResponse>>> GetAllAsync()
     {
+
         var list = await _employeeRepository.GetAllAsync();
-        var responseList = new List<GetAllEmployeeResponse>();
+        List<GetAllEmployeeResponse> responselist = _mapper.Map<List<GetAllEmployeeResponse>>(list);
 
-        foreach (var item in list)
-        {
-            GetAllEmployeeResponse response = new GetAllEmployeeResponse();
-            response.Id = item.Id;
-            response.FirstName = item.FirstName;
-            response.LastName = item.LastName;
-            response.Email = item.Email;
-            response.Position = item.Position;
-            response.NationalIdentity = item.NationalIdentity;
-            response.DateOfBirth = item.DateOfBirth;
-            responseList.Add(response);
-        }
-
-        return responseList;
+        return new SuccessDataResult<List<GetAllEmployeeResponse>>(responselist, "Listed Succesfuly.");
     }
 
-    public async Task<GetByIdEmployeeResponse> GetByIdAsync(int id)
-    {
-        var item = await _employeeRepository.GetAsync(p => p.Id == id);
-        GetByIdEmployeeResponse response = new GetByIdEmployeeResponse();
-        if (item != null)
-        {
-            response.Id = item.Id;
-            response.FirstName = item.FirstName;
-            response.LastName = item.LastName;
-            response.Email = item.Email;
-            response.Position = item.Position;
-            response.NationalIdentity = item.NationalIdentity;
-            response.DateOfBirth = item.DateOfBirth;
-        }
-        return response;
-    }
-
-    public async Task<UpdateEmployeeResponse> UpdateAsync(UpdateEmployeeRequest request)
+    public async Task<IDataResult<GetByIdEmployeeResponse>> GetByIdAsync(GetByIdEmployeeRequest request)
     {
         var item = await _employeeRepository.GetAsync(p => p.Id == request.Id);
-        UpdateEmployeeResponse response = new UpdateEmployeeResponse();
         if (item != null)
         {
-            item.Id = request.Id;
-            item.FirstName = request.FirstName;
-            item.LastName = request.LastName;
-            item.Email = request.Email;
-            item.Position = request.Position;
-            item.NationalIdentity = request.NationalIdentity;
-            item.Password = request.Password;
-            item.DateOfBirth = request.DateOfBirth;
+            GetByIdEmployeeResponse response = _mapper.Map<GetByIdEmployeeResponse>(item);
+            return new SuccessDataResult<GetByIdEmployeeResponse>(response, "found Succesfuly.");
+        }
+        return new ErrorDataResult<GetByIdEmployeeResponse>("Employee could not be found.");
+    }
+
+    public async Task<IDataResult<UpdateEmployeeResponse>> UpdateAsync(UpdateEmployeeRequest request)
+    {
+        var item = await _employeeRepository.GetAsync(p => p.Id == request.Id);
+
+        if (item != null)
+        {
+            _mapper.Map(request, item);
             await _employeeRepository.UpdateAsync(item);
+            UpdateEmployeeResponse response = _mapper.Map<UpdateEmployeeResponse>(item);
 
-
-            response.FirstName = item.FirstName;
-            response.LastName = item.LastName;
-            response.Email = item.Email;
-            response.Position = item.Position;
-            response.Password = item.Password;
-            response.NationalIdentity = item.NationalIdentity;
-            response.DateOfBirth = item.DateOfBirth;
+            return new SuccessDataResult<UpdateEmployeeResponse>(response, "Employee succesfully updated!");
         }
 
-        return response;
+        return new ErrorDataResult<UpdateEmployeeResponse>("Employee could not be found.");
     }
 }

@@ -1,11 +1,14 @@
-﻿using Business.Abstracts;
+﻿using AutoMapper;
+using Business.Abstracts;
 using Business.Requests.Employee;
 using Business.Requests.Instructor;
 using Business.Requests.User;
 using Business.Responses.Employee;
 using Business.Responses.Instructor;
 using Business.Responses.User;
+using Core.Utilities.Results;
 using DataAccess.Abstracts;
+using DataAccess.Concretes.Repositories;
 using Entities.Concretes;
 using System;
 using System.Collections.Generic;
@@ -18,110 +21,66 @@ namespace Business.Concretes;
 public class InstructorManager:IInstructorService
 {
     private readonly IInstructorRepository _ınstructorRepository;
+    private readonly IMapper _mapper;
 
-    public InstructorManager(IInstructorRepository ınstructorRepository)
+    public InstructorManager(IInstructorRepository ınstructorRepository, IMapper mapper)
     {
         _ınstructorRepository = ınstructorRepository;
+        _mapper = mapper;
     }
 
-    public async Task<CreateInstructorResponse> AddAsync(CreateInstructorRequest request)
+    public async Task<IDataResult<CreateInstructorResponse>> AddAsync(CreateInstructorRequest request)
     {
-        Instructor instructor = new Instructor();
-        instructor.FirstName = request.FirstName;
-        instructor.LastName = request.LastName;
-        instructor.Email = request.Email;
-        instructor.CompanyName = request.CompanyName;
-        instructor.NationalIdentity = request.NationalIdentity;
-        instructor.Password = request.Password;
-        instructor.DateOfBirth = request.DateOfBirth;
+        Instructor user = _mapper.Map<Instructor>(request);
+        await _ınstructorRepository.AddAsync(user);
+        CreateInstructorResponse response = _mapper.Map<CreateInstructorResponse>(user);
 
-        await _ınstructorRepository.AddAsync(instructor);
-        CreateInstructorResponse response = new CreateInstructorResponse();
-        response.FirstName = instructor.FirstName;
-        response.LastName = instructor.LastName;
-        response.Email = instructor.Email;
-        response.CompanyName = instructor.CompanyName;
-        response.NationalIdentity = instructor.NationalIdentity;
-        response.Password = instructor.Password;
-        response.DateOfBirth = instructor.DateOfBirth;
-        response.CreatedDate = instructor.CreateDate;
-
-        return response;
+        return new SuccessDataResult<CreateInstructorResponse>(response, "Added Succesfuly");
     }
 
-    public async Task DeleteAsync(DeleteInstructorRequest request)
+    public async Task<IResult> DeleteAsync(DeleteInstructorRequest request)
     {
         var item = await _ınstructorRepository.GetAsync(p => p.Id == request.Id);
         if (item != null)
         {
             await _ınstructorRepository.DeleteAsync(item);
+            return new SuccessResult("Deleted Succesfuly");
         }
+        return new ErrorResult("Delete Failed!");
     }
 
-    public async Task<List<GetAllInstructorResponse>> GetAll()
+    public async Task<IDataResult<List<GetAllInstructorResponse>>> GetAll()
     {
         var list = await _ınstructorRepository.GetAllAsync();
-        var responseList = new List<GetAllInstructorResponse>();
+        List<GetAllInstructorResponse> responselist = _mapper.Map<List<GetAllInstructorResponse>>(list);
 
-        foreach (var item in list)
-        {
-            GetAllInstructorResponse response = new GetAllInstructorResponse();
-            response.Id = item.Id;
-            response.FirstName = item.FirstName;
-            response.LastName = item.LastName;
-            response.Email = item.Email;
-            response.CompanyName = item.CompanyName;
-            response.NationalIdentity = item.NationalIdentity;
-            response.DateOfBirth = item.DateOfBirth;
-            responseList.Add(response);
-        }
-
-        return responseList;
+        return new SuccessDataResult<List<GetAllInstructorResponse>>(responselist, "Listed Succesfuly.");
     }
 
-    public async Task<GetByIdInstructorResponse> GetByIdAsync(int id)
-    {
-        var item = await _ınstructorRepository.GetAsync(p => p.Id == id);
-        GetByIdInstructorResponse response = new GetByIdInstructorResponse();
-        if (item != null)
-        {
-            response.Id = item.Id;
-            response.FirstName = item.FirstName;
-            response.LastName = item.LastName;
-            response.Email = item.Email;
-            response.CompanyName = item.CompanyName;
-            response.NationalIdentity = item.NationalIdentity;
-            response.DateOfBirth = item.DateOfBirth;
-        }
-        return response;
-    }
-
-    public async Task<UpdateInstructorResponse> UpdateAsync(UpdateInstructorRequest request)
+    public async Task<IDataResult<GetByIdInstructorResponse>> GetByIdAsync(GetByIdInstructorRequest request)
     {
         var item = await _ınstructorRepository.GetAsync(p => p.Id == request.Id);
-        UpdateInstructorResponse response = new UpdateInstructorResponse();
         if (item != null)
         {
-            item.Id = request.Id;
-            item.FirstName = request.FirstName;
-            item.LastName = request.LastName;
-            item.Email = request.Email;
-            item.CompanyName = request.CompanyName;
-            item.NationalIdentity = request.NationalIdentity;
-            item.Password = request.Password;
-            item.DateOfBirth = request.DateOfBirth;
+            GetByIdInstructorResponse response = _mapper.Map<GetByIdInstructorResponse>(item);
+            return new SuccessDataResult<GetByIdInstructorResponse>(response, "found Succesfuly.");
+        }
+        return new ErrorDataResult<GetByIdInstructorResponse>("User could not be found.");
+    }
+
+    public async Task<IDataResult<UpdateInstructorResponse>> UpdateAsync(UpdateInstructorRequest request)
+    {
+        var item = await _ınstructorRepository.GetAsync(p => p.Id == request.Id);
+
+        if (item != null)
+        {
+            _mapper.Map(request, item);
             await _ınstructorRepository.UpdateAsync(item);
+            UpdateInstructorResponse response = _mapper.Map<UpdateInstructorResponse>(item);
 
-
-            response.FirstName = item.FirstName;
-            response.LastName = item.LastName;
-            response.Email = item.Email;
-            response.CompanyName = item.CompanyName;
-            response.Password = item.Password;
-            response.NationalIdentity = item.NationalIdentity;
-            response.DateOfBirth = item.DateOfBirth;
+            return new SuccessDataResult<UpdateInstructorResponse>(response, "User succesfully updated!");
         }
 
-        return response;
+        return new ErrorDataResult<UpdateInstructorResponse>("User could not be found.");
     }
 }

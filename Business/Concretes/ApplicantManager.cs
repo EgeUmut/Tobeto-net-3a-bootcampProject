@@ -1,8 +1,12 @@
-﻿using Business.Abstracts;
+﻿using AutoMapper;
+using Business.Abstracts;
 using Business.Requests.Applicant;
+using Business.Requests.Employee;
 using Business.Requests.User;
 using Business.Responses.Applicant;
+using Business.Responses.Employee;
 using Business.Responses.User;
+using Core.Utilities.Results;
 using DataAccess.Abstracts;
 using DataAccess.Concretes.Repositories;
 using Entities.Concretes;
@@ -17,110 +21,67 @@ namespace Business.Concretes;
 public class ApplicantManager : IApplicantService
 {
     private readonly IApplicantRepository _applicantRepository;
+    private readonly IMapper _mapper;
 
-    public ApplicantManager(IApplicantRepository applicantRepository)
+    public ApplicantManager(IApplicantRepository applicantRepository, IMapper mapper)
     {
         _applicantRepository = applicantRepository;
+        _mapper = mapper;
     }
 
-    public async Task<CreateApplicantResponse> AddAsync(CreateApplicantRequest request)
+    public async Task<IDataResult<CreateApplicantResponse>> AddAsync(CreateApplicantRequest request)
     {
-        Applicant applicant = new Applicant();
-        applicant.FirstName = request.FirstName;
-        applicant.LastName = request.LastName;
-        applicant.Email = request.Email;
-        applicant.About = request.About;
-        applicant.NationalIdentity = request.NationalIdentity;
-        applicant.Password = request.Password;
-        applicant.DateOfBirth = request.DateOfBirth;
-
+        Applicant applicant = _mapper.Map<Applicant>(request);
         await _applicantRepository.AddAsync(applicant);
-        CreateApplicantResponse response = new CreateApplicantResponse();
-        response.FirstName = applicant.FirstName;
-        response.LastName = applicant.LastName;
-        response.Email = applicant.Email;
-        response.About = applicant.About;
-        response.NationalIdentity = applicant.NationalIdentity;
-        response.Password = applicant.Password;
-        response.DateOfBirth = applicant.DateOfBirth;
-        response.CreatedDate = applicant.CreateDate;
+        CreateApplicantResponse response = _mapper.Map<CreateApplicantResponse>(applicant);
 
-        return response;
+        return new SuccessDataResult<CreateApplicantResponse>(response, "Added Succesfuly");
     }
 
-    public async Task DeleteAsync(DeleteApplicantRequest request)
+    public async Task<IResult> DeleteAsync(DeleteApplicantRequest request)
     {
         var item = await _applicantRepository.GetAsync(p => p.Id == request.Id);
         if (item != null)
         {
             await _applicantRepository.DeleteAsync(item);
+            return new SuccessResult("Deleted Succesfuly");
         }
+        return new ErrorResult("Delete Failed!");
     }
 
-    public async Task<List<GetAllApplicantResponse>> GetAll()
+    public async Task<IDataResult<List<GetAllApplicantResponse>>> GetAllAsync()
     {
+
         var list = await _applicantRepository.GetAllAsync();
-        var responseList = new List<GetAllApplicantResponse>();
+        List<GetAllApplicantResponse> responselist = _mapper.Map<List<GetAllApplicantResponse>>(list);
 
-        foreach (var item in list)
-        {
-            GetAllApplicantResponse response = new GetAllApplicantResponse();
-            response.Id = item.Id;
-            response.FirstName = item.FirstName;
-            response.LastName = item.LastName;
-            response.Email = item.Email;
-            response.About = item.About;
-            response.NationalIdentity = item.NationalIdentity;
-            response.DateOfBirth = item.DateOfBirth;
-            responseList.Add(response);
-        }
-
-        return responseList;
+        return new SuccessDataResult<List<GetAllApplicantResponse>>(responselist, "Listed Succesfuly.");
     }
 
-    public async Task<GetByIdApplicantResponse> GetByIdAsync(int id)
-    {
-        var item = await _applicantRepository.GetAsync(p => p.Id == id);
-        GetByIdApplicantResponse response = new GetByIdApplicantResponse();
-        if (item != null)
-        {
-            response.Id = item.Id;
-            response.FirstName = item.FirstName;
-            response.LastName = item.LastName;
-            response.Email = item.Email;
-            response.About = item.About;
-            response.NationalIdentity = item.NationalIdentity;
-            response.DateOfBirth = item.DateOfBirth;
-        }
-        return response;
-    }
-
-    public async Task<UpdateApplicantResponse> UpdateAsync(UpdateApplicantRequest request)
+    public async Task<IDataResult<GetByIdApplicantResponse>> GetByIdAsync(GetByIdApplicantRequest request)
     {
         var item = await _applicantRepository.GetAsync(p => p.Id == request.Id);
-        UpdateApplicantResponse response = new UpdateApplicantResponse();
         if (item != null)
         {
-            item.Id = request.Id;
-            item.FirstName = request.FirstName;
-            item.LastName = request.LastName;
-            item.Email = request.Email;
-            item.About = request.About;
-            item.NationalIdentity = request.NationalIdentity;
-            item.Password = request.Password;
-            item.DateOfBirth = request.DateOfBirth;
+            GetByIdApplicantResponse response = _mapper.Map<GetByIdApplicantResponse>(item);
+            return new SuccessDataResult<GetByIdApplicantResponse>(response, "found Succesfuly.");
+        }
+        return new ErrorDataResult<GetByIdApplicantResponse>("Applicant could not be found.");
+    }
+
+    public async Task<IDataResult<UpdateApplicantResponse>> UpdateAsync(UpdateApplicantRequest request)
+    {
+        var item = await _applicantRepository.GetAsync(p => p.Id == request.Id);
+
+        if (item != null)
+        {
+            _mapper.Map(request, item);
             await _applicantRepository.UpdateAsync(item);
+            UpdateApplicantResponse response = _mapper.Map<UpdateApplicantResponse>(item);
 
-
-            response.FirstName = item.FirstName;
-            response.LastName = item.LastName;
-            response.Email = item.Email;
-            response.About = item.About;
-            response.Password = item.Password;
-            response.NationalIdentity = item.NationalIdentity;
-            response.DateOfBirth = item.DateOfBirth;
+            return new SuccessDataResult<UpdateApplicantResponse>(response, "Applicant succesfully updated!");
         }
 
-        return response;
+        return new ErrorDataResult<UpdateApplicantResponse>("Applicant could not be found.");
     }
 }

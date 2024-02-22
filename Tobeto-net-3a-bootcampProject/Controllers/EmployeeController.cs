@@ -22,52 +22,36 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
         [HttpPost("Add")]
         public async Task<IActionResult> Add(CreateEmployeeRequest request)
         {
-            await _employeeManager.AddAsync(request);
-            return Ok();
+            var addedEmployee = await _employeeManager.AddAsync(request);
+            return Ok(addedEmployee);
         }
 
         [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(DeleteEmployeeRequest request)
         {
-            var user = await _employeeManager.GetByIdAsync(request.Id);
-            if (user == null)
-            {
-                return NotFound();
-            }
 
-            await _employeeManager.DeleteAsync(request);
-            return Ok();
+            
+            return Ok(await _employeeManager.DeleteAsync(request));
         }
 
         [HttpGet("GetById")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(GetByIdEmployeeRequest request)
         {
-            var user = await _employeeManager.GetByIdAsync(id);
-            if (user.Id == 0 && user == null)
-            {
-                return NotFound();
-            }
-
+            var user = await _employeeManager.GetByIdAsync(request);
             return Ok(user);
         }
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var users = await _employeeManager.GetAll();
+            var users = await _employeeManager.GetAllAsync();
             return Ok(users);
         }
 
         [HttpPut("Update")]
         public async Task<IActionResult> Update(UpdateEmployeeRequest request)
         {
-            if (request.Id == 0)
-            {
-                return BadRequest();
-            }
-
-            await _employeeManager.UpdateAsync(request);
-            return Ok();
+            return Ok(await _employeeManager.UpdateAsync(request));
         }
     }
 }

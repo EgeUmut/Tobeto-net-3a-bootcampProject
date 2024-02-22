@@ -3,6 +3,7 @@ using Business.Concretes;
 using Business.Requests.Employee;
 using Business.Requests.Instructor;
 using Business.Requests.User;
+using Entities.Concretes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,26 +30,13 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
         [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(DeleteInstructorRequest request)
         {
-            var user = await _instructorManager.GetByIdAsync(request.Id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            await _instructorManager.DeleteAsync(request);
-            return Ok();
+            return Ok(await _instructorManager.DeleteAsync(request));
         }
 
         [HttpGet("GetById")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(GetByIdInstructorRequest request)
         {
-            var user = await _instructorManager.GetByIdAsync(id);
-            if (user.Id == 0 && user == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(user);
+            return Ok(await _instructorManager.GetByIdAsync(request));
         }
 
         [HttpGet("GetAll")]
@@ -61,13 +49,7 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
         [HttpPut("Update")]
         public async Task<IActionResult> Update(UpdateInstructorRequest request)
         {
-            if (request.Id == 0)
-            {
-                return BadRequest();
-            }
-
-            await _instructorManager.UpdateAsync(request);
-            return Ok();
+            return Ok(await _instructorManager.UpdateAsync(request));
         }
     }
 }
