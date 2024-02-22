@@ -30,14 +30,14 @@ public class TobetoBootCampProjectContext : DbContext
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         foreach (var reletioship in modelBuilder.Model.GetEntityTypes().SelectMany(p => p.GetForeignKeys()))
         {
-            reletioship.DeleteBehavior = DeleteBehavior.NoAction;
+            reletioship.DeleteBehavior = DeleteBehavior.Restrict;
         }
         
 
-        modelBuilder.Entity<Applicant>().ToTable("Applicants");
-        modelBuilder.Entity<Employee>().ToTable("Employees");
-        modelBuilder.Entity<Instructor>().ToTable("Instructors");
-        modelBuilder.Entity<User>().ToTable("Users");
+        //modelBuilder.Entity<Applicant>().ToTable("Applicants");
+        //modelBuilder.Entity<Employee>().ToTable("Employees");
+        //modelBuilder.Entity<Instructor>().ToTable("Instructors");
+        //modelBuilder.Entity<User>().ToTable("Users");
 
         //modelBuilder.Entity<Application>().ToTable("Applications");
         //modelBuilder.Entity<ApplicationState>().ToTable("ApplicationStates");
