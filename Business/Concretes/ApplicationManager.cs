@@ -32,9 +32,9 @@ public class ApplicationManager : IApplicationService
         return new SuccessDataResult<CreateApplicationResponse>("Added Succesfuly");
     }
 
-    public async Task<IResult> DeleteAsync(int request)
+    public async Task<IResult> DeleteAsync(DeleteApplicationRequest request)
     {
-        var item = await _applicationRepository.GetAsync(p => p.Id == request);
+        var item = await _applicationRepository.GetAsync(p => p.Id == request.Id);
         if (item != null)
         {
             await _applicationRepository.DeleteAsync(item);
@@ -51,11 +51,12 @@ public class ApplicationManager : IApplicationService
         return new SuccessDataResult<List<GetAllApplicationResponse>>(responseList,"Listed Succesfuly.");
     }
 
-    public async Task<IDataResult<GetByIdApplicationResponse>> GetByIdAsync(int id)
+    public async Task<IDataResult<GetByIdApplicationResponse>> GetByIdAsync(GetByIdApplicationRequest request)
     {
         var list = await _applicationRepository.GetAllAsync(include: x => x.Include(p => p.Applicant).Include(p => p.Bootcamp).Include(p => p.ApplicationState));
-        var item = list.Where(p => p.Id == id).FirstOrDefault();
+        var item = list.Where(p => p.Id == request.Id).FirstOrDefault();
         GetByIdApplicationResponse response = _mapper.Map<GetByIdApplicationResponse>(item);
+
         if (item != null)
         {
             return new SuccessDataResult<GetByIdApplicationResponse>(response, "found Succesfuly.");
@@ -63,8 +64,19 @@ public class ApplicationManager : IApplicationService
         return new ErrorDataResult<GetByIdApplicationResponse>("Application could not be found.");
     }
 
-    public Task<UpdateApplicationResponse> UpdateAsync(UpdateApplicationRequest request)
+    public async Task<IDataResult<UpdateApplicationResponse>> UpdateAsync(UpdateApplicationRequest request)
     {
-        throw new NotImplementedException();
+        var item = await _applicationRepository.GetAsync(p=>p.Id == request.Id, include: x => x.Include(p => p.Applicant).Include(p => p.Bootcamp));
+        if (request.Id == 0 || item == null)
+        {
+            return new ErrorDataResult<UpdateApplicationResponse>("Application could not be found.");
+        }
+
+        _mapper.Map(request, item);
+        await _applicationRepository.UpdateAsync(item);
+
+        UpdateApplicationResponse response = _mapper.Map<UpdateApplicationResponse>(item);
+        return new SuccessDataResult<UpdateApplicationResponse>(response, "Application succesfully updated!");
+
     }
 }

@@ -29,5 +29,23 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
         {
             return Ok(await _applicationService.GetAllAsync());
         }
+
+        [HttpPost("GetByIdAsync")]
+        public async Task<IActionResult> getByIdAsync(GetByIdApplicationRequest request)
+        {
+            return Ok(await _applicationService.GetByIdAsync(request));
+        }
+
+        [HttpDelete("DeleteAsync")]
+        public async Task<IActionResult> DeleteAsync(DeleteApplicationRequest request)
+        {
+            return Ok(await _applicationService.DeleteAsync(request));
+        }
+
+        [HttpPut("UpdateAsync")]
+        public async Task<IActionResult> UpdateAsync(UpdateApplicationRequest request)
+        {
+            return Ok(await _applicationService.UpdateAsync(request));
+        }
     }
 }

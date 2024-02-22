@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Requests.ApplicantState;
+namespace Business.Requests.Application;
 
-public class CreateApplicantStateRequest
+public class GetByIdApplicationRequest
 {
-    public string Name { get; set; }
+    public int Id { get; set; }
 }

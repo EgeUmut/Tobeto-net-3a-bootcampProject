@@ -18,7 +18,10 @@ public class MappingProfiles : Profile
     {
         CreateMap<Bootcamp, CreateBootcampRequest>().ReverseMap();
         CreateMap<Bootcamp, UpdateBootcampRequest>().ReverseMap();
+        CreateMap<Bootcamp, DeleteBootcampRequest>().ReverseMap();
+        CreateMap<Bootcamp, GetByIdBootcampRequest>().ReverseMap();
 
+        CreateMap<Bootcamp, CreateBootcampResponse>().ReverseMap();
         CreateMap<Bootcamp, GetAllBootcampResponse>().ReverseMap();
         CreateMap<Bootcamp, GetByIdBootcampResponse>().ReverseMap();
         CreateMap<Bootcamp, UpdateBootcampResponse>().ReverseMap();

@@ -17,6 +17,8 @@ public class MappingProfiles:Profile
     {
         CreateMap<Application, CreateApplicationRequest>().ReverseMap();
         CreateMap<Application, UpdateApplicationRequest>().ReverseMap();
+        CreateMap<Application, DeleteApplicationRequest>().ReverseMap();
+        CreateMap<Application, GetByIdApplicationRequest>().ReverseMap();
 
         CreateMap<Application, CreateApplicationResponse>().ReverseMap();
         CreateMap<Application, GetAllApplicationResponse>().ReverseMap();

@@ -8,5 +8,11 @@ namespace Entities.Concretes;
 
 public class Applicant:User
 {
+    public Applicant()
+    {
+        Applications = new HashSet<Application>();
+    }
+
     public string About { get; set; }
+    public ICollection<Application> Applications { get; set; }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(TobetoBootCampProjectContext))]
-    [Migration("20240221181008_21subat")]
-    partial class _21subat
+    [Migration("20240222115127_22SubatOgle")]
+    partial class _22SubatOgle
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -219,6 +219,11 @@ namespace DataAccess.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("DeleteDate");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
@@ -255,7 +260,9 @@ namespace DataAccess.Migrations
 
                     b.ToTable("Users", (string)null);
 
-                    b.UseTptMappingStrategy();
+                    b.HasDiscriminator<string>("Discriminator").HasValue("User");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Entities.Concretes.Applicant", b =>
@@ -267,7 +274,7 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("About");
 
-                    b.ToTable("Applicants", (string)null);
+                    b.HasDiscriminator().HasValue("Applicant");
                 });
 
             modelBuilder.Entity("Entities.Concretes.Employee", b =>
@@ -279,7 +286,7 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Position");
 
-                    b.ToTable("Employees", (string)null);
+                    b.HasDiscriminator().HasValue("Employee");
                 });
 
             modelBuilder.Entity("Entities.Concretes.Instructor", b =>
@@ -291,13 +298,13 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("CompanyName");
 
-                    b.ToTable("Instructors", (string)null);
+                    b.HasDiscriminator().HasValue("Instructor");
                 });
 
             modelBuilder.Entity("Entities.Concretes.Application", b =>
                 {
                     b.HasOne("Entities.Concretes.Applicant", "Applicant")
-                        .WithMany()
+                        .WithMany("Applications")
                         .HasForeignKey("ApplicantId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -309,7 +316,7 @@ namespace DataAccess.Migrations
                         .IsRequired();
 
                     b.HasOne("Entities.Concretes.Bootcamp", "Bootcamp")
-                        .WithMany()
+                        .WithMany("Applications")
                         .HasForeignKey("BootcampId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -340,31 +347,14 @@ namespace DataAccess.Migrations
                     b.Navigation("Instructor");
                 });
 
+            modelBuilder.Entity("Entities.Concretes.Bootcamp", b =>
+                {
+                    b.Navigation("Applications");
+                });
+
             modelBuilder.Entity("Entities.Concretes.Applicant", b =>
                 {
-                    b.HasOne("Entities.Concretes.User", null)
-                        .WithOne()
-                        .HasForeignKey("Entities.Concretes.Applicant", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Entities.Concretes.Employee", b =>
-                {
-                    b.HasOne("Entities.Concretes.User", null)
-                        .WithOne()
-                        .HasForeignKey("Entities.Concretes.Employee", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Entities.Concretes.Instructor", b =>
-                {
-                    b.HasOne("Entities.Concretes.User", null)
-                        .WithOne()
-                        .HasForeignKey("Entities.Concretes.Instructor", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Applications");
                 });
 #pragma warning restore 612, 618
         }

@@ -39,14 +39,13 @@ public class TobetoBootCampProjectContext : DbContext
         modelBuilder.Entity<Instructor>().ToTable("Instructors");
         modelBuilder.Entity<User>().ToTable("Users");
 
-        modelBuilder.Entity<Application>().ToTable("Applications");
-        modelBuilder.Entity<ApplicationState>().ToTable("ApplicationStates");
-        modelBuilder.Entity<Bootcamp>().ToTable("Bootcamps");
-        modelBuilder.Entity<BootcampState>().ToTable("BootcampStates");
+        //modelBuilder.Entity<Application>().ToTable("Applications");
+        //modelBuilder.Entity<ApplicationState>().ToTable("ApplicationStates");
+        //modelBuilder.Entity<Bootcamp>().ToTable("Bootcamps");
+        //modelBuilder.Entity<BootcampState>().ToTable("BootcampStates");
     }
 
     protected IConfiguration Configuration { get; set; }
-
     public DbSet<User> Users { get; set; }
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Instructor> Instructors { get; set; }
