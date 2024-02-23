@@ -10,7 +10,7 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeController : ControllerBase
+    public class EmployeeController : BaseController
     {
         private readonly IEmployeeService _employeeManager;
 
@@ -23,35 +23,33 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
         public async Task<IActionResult> Add(CreateEmployeeRequest request)
         {
             var addedEmployee = await _employeeManager.AddAsync(request);
-            return Ok(addedEmployee);
+            return HandleDataResult(addedEmployee);
         }
 
         [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(DeleteEmployeeRequest request)
         {
-
-            
-            return Ok(await _employeeManager.DeleteAsync(request));
+            return HandleResult(await _employeeManager.DeleteAsync(request));
         }
 
         [HttpGet("GetById")]
         public async Task<IActionResult> GetById(GetByIdEmployeeRequest request)
         {
             var user = await _employeeManager.GetByIdAsync(request);
-            return Ok(user);
+            return HandleDataResult(user);
         }
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
             var users = await _employeeManager.GetAllAsync();
-            return Ok(users);
+            return HandleDataResult(users);
         }
 
         [HttpPut("Update")]
         public async Task<IActionResult> Update(UpdateEmployeeRequest request)
         {
-            return Ok(await _employeeManager.UpdateAsync(request));
+            return HandleDataResult(await _employeeManager.UpdateAsync(request));
         }
     }
 }

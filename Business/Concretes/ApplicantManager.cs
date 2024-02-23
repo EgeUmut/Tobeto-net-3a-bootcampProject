@@ -51,7 +51,6 @@ public class ApplicantManager : IApplicantService
 
     public async Task<IDataResult<List<GetAllApplicantResponse>>> GetAllAsync()
     {
-
         var list = await _applicantRepository.GetAllAsync();
         List<GetAllApplicantResponse> responselist = _mapper.Map<List<GetAllApplicantResponse>>(list);
 

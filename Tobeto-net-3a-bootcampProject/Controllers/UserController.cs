@@ -8,7 +8,7 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : BaseController
     {
         private readonly IUserService _userManager;
 
@@ -21,14 +21,14 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
         public async Task<IActionResult> Add(CreateUserRequest request)
         {
             var addedUser = await _userManager.AddAsync(request);
-            return Ok(addedUser);
+            return HandleDataResult(addedUser);
         }
 
         [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(DeleteUserRequest request)
         {
             var item = await _userManager.DeleteAsync(request);
-            return Ok(item);
+            return HandleResult(item);
         }
 
         [HttpGet("GetById")]
@@ -36,27 +36,22 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
         {
             var user = await _userManager.GetByIdAsync(request);
 
-            return Ok(user);
+            return HandleDataResult(user);
         }
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
             var users = await _userManager.GetAllAsync();
-            return Ok(users);
+            return HandleDataResult(users);
         }
 
         [HttpPut("Update")]
         public async Task<IActionResult> Update(UpdateUserRequest request)
         {
-            if (request.Id == null)
-            {
-                return BadRequest();
-            }
-
 
             var updatedUser = await _userManager.UpdateAsync(request);
-            return Ok(updatedUser);
+            return HandleDataResult(updatedUser);
         }
     }
 }

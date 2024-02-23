@@ -8,7 +8,7 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ApplicantController : ControllerBase
+    public class ApplicantController : BaseController
     {
         private readonly IApplicantService _applicantManager;
 
@@ -20,33 +20,33 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
         [HttpPost("Add")]
         public async Task<IActionResult> Add(CreateApplicantRequest request)
         {
-            return Ok(await _applicantManager.AddAsync(request));
+            return HandleDataResult(await _applicantManager.AddAsync(request));
         }
 
         [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(DeleteApplicantRequest request)
         {
-            return Ok(await _applicantManager.DeleteAsync(request));
+            return HandleResult(await _applicantManager.DeleteAsync(request));
         }
 
-        [HttpGet("GetById")]
+        [HttpPost("GetById")]
         public async Task<IActionResult> GetById(GetByIdApplicantRequest request)
         {
             var user = await _applicantManager.GetByIdAsync(request);
-            return Ok(user);
+            return HandleDataResult(user);
         }
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
             var users = await _applicantManager.GetAllAsync();
-            return Ok(users);
+            return HandleDataResult(users);
         }
 
         [HttpPut("Update")]
         public async Task<IActionResult> Update(UpdateApplicantRequest request)
         {
-            return Ok(await _applicantManager.UpdateAsync(request));
+            return HandleDataResult(await _applicantManager.UpdateAsync(request));
         }
     }
 }

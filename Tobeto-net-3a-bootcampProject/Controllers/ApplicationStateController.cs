@@ -8,7 +8,7 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ApplicationStateController : ControllerBase
+    public class ApplicationStateController : BaseController
     {
         private readonly IApplicationStateService _applicationStateService;
 
@@ -20,31 +20,31 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
         [HttpPost("AddAsync")]
         public async Task<IActionResult> AddAsync(CreateApplicationStateRequest request)
         {
-            return Ok(await _applicationStateService.AddAsync(request));
+            return HandleDataResult(await _applicationStateService.AddAsync(request));
         }
 
         [HttpGet("GetAllAsync")]
         public async Task<IActionResult> getAllAsync()
         {
-            return Ok(await _applicationStateService.GetAllAsync());
+            return HandleDataResult(await _applicationStateService.GetAllAsync());
         }
 
         [HttpPost("GetByIdAsync")]
         public async Task<IActionResult> getByIdAsync(GetByIdApplicationStateRequest request)
         {
-            return Ok(await _applicationStateService.GetByIdAsync(request));
+            return HandleDataResult(await _applicationStateService.GetByIdAsync(request));
         }
 
         [HttpDelete("DeleteAsync")]
         public async Task<IActionResult> DeleteAsync(DeleteApplicationStateRequest request)
         {
-            return Ok(await _applicationStateService.DeleteAsync(request));
+            return HandleResult(await _applicationStateService.DeleteAsync(request));
         }
 
         [HttpPut("UpdateAsync")]
         public async Task<IActionResult> UpdateAsync(UpdateApplicationStateRequest request)
         {
-            return Ok(await _applicationStateService.UpdateAsync(request));
+            return HandleDataResult(await _applicationStateService.UpdateAsync(request));
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BootcampStateController : ControllerBase
+    public class BootcampStateController : BaseController
     {
         private readonly IBootcampStateService _bootcampStateService;
 
@@ -20,31 +20,31 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
         [HttpPost("AddAsync")]
         public async Task<IActionResult> AddAsync(CreateBootcampStateRequest request)
         {
-            return Ok(await _bootcampStateService.AddAsync(request));
+            return HandleDataResult(await _bootcampStateService.AddAsync(request));
         }
 
         [HttpGet("GetAllAsync")]
         public async Task<IActionResult> getAllAsync()
         {
-            return Ok(await _bootcampStateService.GetAllAsync());
+            return HandleDataResult(await _bootcampStateService.GetAllAsync());
         }
 
         [HttpPost("GetByIdAsync")]
         public async Task<IActionResult> getByIdAsync(GetByIdBootcampStateRequest request)
         {
-            return Ok(await _bootcampStateService.GetByIdAsync(request));
+            return HandleDataResult(await _bootcampStateService.GetByIdAsync(request));
         }
 
         [HttpDelete("DeleteAsync")]
         public async Task<IActionResult> DeleteAsync(DeleteBootcampStateRequest request)
         {
-            return Ok(await _bootcampStateService.DeleteAsync(request));
+            return HandleResult(await _bootcampStateService.DeleteAsync(request));
         }
 
         [HttpPut("UpdateAsync")]
         public async Task<IActionResult> UpdateAsync(UpdateBootcampStateRequest request)
         {
-            return Ok(await _bootcampStateService.UpdateAsync(request));
+            return HandleDataResult(await _bootcampStateService.UpdateAsync(request));
         }
     }
 }
