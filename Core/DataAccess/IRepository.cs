@@ -21,4 +21,5 @@ public interface IRepository<TEntity, TEntityId> : IQuery<TEntity> where TEntity
     public TEntity Add(TEntity entity);
     public TEntity Update(TEntity entity);
     public TEntity Delete(TEntity entity);
+    public TEntity SoftDelete(TEntity entity);
 }

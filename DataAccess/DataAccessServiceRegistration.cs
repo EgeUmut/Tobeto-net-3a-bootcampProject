@@ -29,6 +29,8 @@ public static class DataAccessServiceRegistration
         services.AddScoped<IBootcampRepository, BootcampRepository>();
         services.AddScoped<IBootcampStateRepository, BootcampStateRepository>();
 
+        services.AddScoped<IBlackListRepository, BlackListRepository>();
+
         return services;
     }
 }

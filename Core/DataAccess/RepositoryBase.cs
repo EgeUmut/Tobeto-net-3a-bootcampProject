@@ -45,6 +45,15 @@ public class RepositoryBase<TEntity, TContext, TId> : IAsyncRepository<TEntity, 
         return entity;
     }
 
+    public async Task<TEntity> SoftDeleteAsync(TEntity entity)
+    {
+        entity.DeleteDate = DateTime.UtcNow;
+        entity.IsDeleted = true;
+        _context.Update(entity);
+        await _context.SaveChangesAsync();
+        return entity;
+    }
+
     public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> predicate = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null)
     {
         IQueryable<TEntity> query = Query();
@@ -123,6 +132,15 @@ public class RepositoryBase<TEntity, TContext, TId> : IAsyncRepository<TEntity, 
     {
         entity.DeleteDate = DateTime.UtcNow;
         _context.Remove(entity);
+        _context.SaveChanges();
+        return entity;
+    }
+
+    public TEntity SoftDelete(TEntity entity)
+    {
+        entity.DeleteDate = DateTime.UtcNow;
+        entity.IsDeleted = true;
+        _context.Update(entity);
         _context.SaveChanges();
         return entity;
     }

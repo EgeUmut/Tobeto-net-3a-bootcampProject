@@ -4,6 +4,7 @@ using DataAccess;
 using DataAccess.Abstracts;
 using DataAccess.Concretes.Repositories;
 using Business;
+using Core.Exceptios.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.ConfigureCustomExceptionMiddleWare();
 }
 
 app.UseAuthorization();

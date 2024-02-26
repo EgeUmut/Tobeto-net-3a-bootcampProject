@@ -21,5 +21,6 @@ public interface IAsyncRepository<TEntity, TEntityId> : IQuery<TEntity> where TE
     Task<TEntity> AddAsync(TEntity entity);
     Task<TEntity> UpdateAsync(TEntity entity);
     Task<TEntity> DeleteAsync(TEntity entity);
+    Task<TEntity> SoftDeleteAsync(TEntity entity);
 
 }
