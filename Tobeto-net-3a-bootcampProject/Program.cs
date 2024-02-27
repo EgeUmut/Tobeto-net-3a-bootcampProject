@@ -1,10 +1,6 @@
-using Business.Abstracts;
-using Business.Concretes;
-using DataAccess;
-using DataAccess.Abstracts;
-using DataAccess.Concretes.Repositories;
 using Business;
 using Core.Exceptios.Extensions;
+using DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
 

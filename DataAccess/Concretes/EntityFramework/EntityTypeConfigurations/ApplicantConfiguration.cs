@@ -17,5 +17,6 @@ public class ApplicantConfiguration : IEntityTypeConfiguration<Applicant>
         builder.Property(x => x.About).HasColumnName("About").IsRequired();
 
         builder.HasMany(p => p.Applications);
+        builder.HasOne(x => x.BlackList);
     }
 }

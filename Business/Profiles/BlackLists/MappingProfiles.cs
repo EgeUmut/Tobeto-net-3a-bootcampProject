@@ -1,14 +1,7 @@
 ﻿using AutoMapper;
 using Business.Requests.BlackList;
-using Business.Requests.Bootcamp;
 using Business.Responses.BlackList;
-using Business.Responses.Bootcamp;
 using Entities.Concretes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.Profiles.BlackLists;
 

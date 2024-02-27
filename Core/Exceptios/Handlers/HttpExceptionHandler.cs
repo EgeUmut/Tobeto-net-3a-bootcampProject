@@ -2,12 +2,6 @@
 using Core.Exceptios.HttpProblemDetails;
 using Core.Exceptios.Types;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Exceptios.Handlers;
 
@@ -56,6 +50,4 @@ public class HttpExceptionHandler : ExceptionHandler
         string details = new InternalServerErrorProblemDetails(exception.Message).AsJson();
         return Response.WriteAsync(details);
     }
-
-
 }

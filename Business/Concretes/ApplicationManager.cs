@@ -18,16 +18,24 @@ public class ApplicationManager : IApplicationService
 {
     private readonly IApplicationRepository _applicationRepository;
     private readonly IMapper _mapper;
+    private readonly IBlackListService _blackListService;
 
-    public ApplicationManager(IApplicationRepository applicationRepository, IMapper mapper)
+    public ApplicationManager(IApplicationRepository applicationRepository, IMapper mapper, IBlackListService blackListService)
     {
         _applicationRepository = applicationRepository;
         _mapper = mapper;
+        _blackListService = blackListService;
     }
 
     public async Task<IDataResult<CreateApplicationResponse>> AddAsync(CreateApplicationRequest request)
     {
         Application application = _mapper.Map<Application>(request);
+
+        if (await _blackListService.GetByApplicantIdAsync(request.ApplicantId) != null)
+        {
+            return new ErrorDataResult<CreateApplicationResponse>("Applicant is blacklisted");
+        }
+
         await _applicationRepository.AddAsync(application);
         return new SuccessDataResult<CreateApplicationResponse>("Added Succesfuly");
     }
@@ -53,8 +61,8 @@ public class ApplicationManager : IApplicationService
 
     public async Task<IDataResult<GetByIdApplicationResponse>> GetByIdAsync(GetByIdApplicationRequest request)
     {
-        var list = await _applicationRepository.GetAllAsync(include: x => x.Include(p => p.Applicant).Include(p => p.Bootcamp).Include(p => p.ApplicationState));
-        var item = list.Where(p => p.Id == request.Id).FirstOrDefault();
+        var item = await _applicationRepository.GetAsync(p=>p.Id == request.Id, include: x => x.Include(p => p.Applicant).Include(p => p.Bootcamp).Include(p => p.ApplicationState));
+        //var item = list.Where(p => p.Id == request.Id).FirstOrDefault();
         GetByIdApplicationResponse response = _mapper.Map<GetByIdApplicationResponse>(item);
 
         if (item != null)

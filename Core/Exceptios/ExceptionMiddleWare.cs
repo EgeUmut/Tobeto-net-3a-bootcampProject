@@ -1,12 +1,7 @@
 ﻿using Core.Exceptios.Handlers;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Core.Exceptios.Extensions;
+namespace Core.Exceptios;
 
 public class ExceptionMiddleWare
 {

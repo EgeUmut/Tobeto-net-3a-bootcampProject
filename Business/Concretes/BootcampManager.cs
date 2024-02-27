@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Business.Concretes;
 
-public class BootcampManager:IBootcampService
+public class BootcampManager : IBootcampService
 {
     private readonly IBootcampRepository _bootcampRepository;
     private readonly IMapper _mapper;
@@ -48,7 +48,7 @@ public class BootcampManager:IBootcampService
 
     public async Task<IDataResult<List<GetAllBootcampResponse>>> GetAllAsync()
     {
-        var list = await _bootcampRepository.GetAllAsync(include:x=>x.Include(p=>p.Instructor).Include(p=>p.BootcampState));
+        var list = await _bootcampRepository.GetAllAsync(include: x => x.Include(p => p.Instructor).Include(p => p.BootcampState));
 
         List<GetAllBootcampResponse> responseList = _mapper.Map<List<GetAllBootcampResponse>>(list);
         return new SuccessDataResult<List<GetAllBootcampResponse>>(responseList, "Listed Succesfuly.");
@@ -57,10 +57,10 @@ public class BootcampManager:IBootcampService
     public async Task<IDataResult<GetByIdBootcampResponse>> GetByIdAsync(GetByIdBootcampRequest request)
     {
         var item = await _bootcampRepository.GetAsync(p => p.Id == request.Id, include: x => x.Include(p => p.Instructor).Include(p => p.BootcampState));
-        GetByIdBootcampResponse response = _mapper.Map<GetByIdBootcampResponse>(item);
 
         if (item != null)
         {
+            GetByIdBootcampResponse response = _mapper.Map<GetByIdBootcampResponse>(item);
             return new SuccessDataResult<GetByIdBootcampResponse>(response, "found Succesfuly.");
         }
         return new ErrorDataResult<GetByIdBootcampResponse>("Bootcamp could not be found.");

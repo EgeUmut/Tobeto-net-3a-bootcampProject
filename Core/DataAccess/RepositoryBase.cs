@@ -25,17 +25,10 @@ public class RepositoryBase<TEntity, TContext, TId> : IAsyncRepository<TEntity, 
 
     public async Task<TEntity> AddAsync(TEntity entity)
     {
-        try
-        {
             entity.CreateDate = DateTime.Now; //created date added.
             await _context.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity;
-        }
-        catch (Exception e)
-        {
-            throw e;
-        }
     }
 
     public async Task<TEntity> DeleteAsync(TEntity entity)
@@ -95,18 +88,10 @@ public class RepositoryBase<TEntity, TContext, TId> : IAsyncRepository<TEntity, 
 
     public async Task<TEntity> UpdateAsync(TEntity entity)
     {
-        try
-        {
             entity.UpdateDate = DateTime.UtcNow; //update date time enter
             var UpdatedEntity = _context.Entry(entity);
             UpdatedEntity.State = EntityState.Modified;
             await _context.SaveChangesAsync();
-        }
-        catch (Exception e)
-        {
-
-            throw e;
-        }
 
         //_context.Entry(entity).State = EntityState.Modified;
         //await _context.SaveChangesAsync();
@@ -147,6 +132,7 @@ public class RepositoryBase<TEntity, TContext, TId> : IAsyncRepository<TEntity, 
 
     public TEntity Get(Expression<Func<TEntity, bool>> predicate = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
     {
+        //IQueryable<TEntity> queryable = Query().Where(e => e.IsDeleted != true);
         IQueryable<TEntity> queryable = Query();
         if (include != null)
             queryable = include(queryable);
@@ -155,6 +141,7 @@ public class RepositoryBase<TEntity, TContext, TId> : IAsyncRepository<TEntity, 
 
     public List<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
     {
+        //IQueryable<TEntity> queryable = Query().Where(e => e.IsDeleted != true); 
         IQueryable<TEntity> queryable = Query();
         if (include != null)
             queryable = include(queryable);
