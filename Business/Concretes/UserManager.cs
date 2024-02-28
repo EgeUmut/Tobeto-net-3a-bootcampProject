@@ -4,8 +4,11 @@ using Business.Abstracts;
 using Business.Requests.User;
 using Business.Responses.Application;
 using Business.Responses.User;
+using Core.Exceptios.Types;
+using Core.Helpers;
 using Core.Utilities.Results;
 using DataAccess.Abstracts;
+using DataAccess.Concretes.Repositories;
 using Entities.Concretes;
 using System;
 using System.Collections.Generic;
@@ -28,22 +31,23 @@ public class UserManager : IUserService
 
     public async Task<IDataResult<CreateUserResponse>> AddAsync(CreateUserRequest request)
     {
+        await CheckUserNameIfExist(request.UserName);
+
         User user = _mapper.Map<User>(request);
         await _userRepository.AddAsync(user);
         CreateUserResponse response = _mapper.Map<CreateUserResponse>(user);
 
-        return new SuccessDataResult<CreateUserResponse>(response,"Added Succesfuly");
+        return new SuccessDataResult<CreateUserResponse>(response, "Added Succesfuly");
     }
 
     public async Task<IResult> DeleteAsync(DeleteUserRequest request)
     {
+        await CheckIfIdNotExist(request.Id);
+
         var item = await _userRepository.GetAsync(p => p.Id == request.Id);
-        if (item != null)
-        {
-            await _userRepository.DeleteAsync(item);
-            return new SuccessResult("Deleted Succesfuly");
-        }
-        return new ErrorResult("Delete Failed!");
+
+        await _userRepository.DeleteAsync(item);
+        return new SuccessResult("Deleted Succesfuly");
     }
 
     public async Task<IDataResult<List<GetAllUserResponse>>> GetAllAsync()
@@ -57,28 +61,47 @@ public class UserManager : IUserService
 
     public async Task<IDataResult<GetByIdUserResponse>> GetByIdAsync(GetByIdUserRequest request)
     {
+        await CheckIfIdNotExist(request.Id);
+
         var item = await _userRepository.GetAsync(p => p.Id == request.Id);
-        if (item != null)
-        {
-            GetByIdUserResponse response = _mapper.Map<GetByIdUserResponse>(item);
-            return new SuccessDataResult<GetByIdUserResponse>(response, "found Succesfuly.");
-        }
-        return new ErrorDataResult<GetByIdUserResponse>("User could not be found.");
+
+        GetByIdUserResponse response = _mapper.Map<GetByIdUserResponse>(item);
+        return new SuccessDataResult<GetByIdUserResponse>(response, "found Succesfuly.");
     }
 
     public async Task<IDataResult<UpdateUserResponse>> UpdateAsync(UpdateUserRequest request)
     {
+        await CheckIfIdNotExist(request.Id);
+        await CheckUserNameIfExist(request.UserName);
+
         var item = await _userRepository.GetAsync(p => p.Id == request.Id);
-        
+
+        _mapper.Map(request, item);
+        await _userRepository.UpdateAsync(item);
+        UpdateUserResponse response = _mapper.Map<UpdateUserResponse>(item);
+
+        return new SuccessDataResult<UpdateUserResponse>(response, "User succesfully updated!");
+    }
+
+    //
+    //
+    //Business Rules
+
+    public async Task CheckUserNameIfExist(string userName)
+    {
+        var item = await _userRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName));
         if (item != null)
         {
-            _mapper.Map(request, item);
-            await _userRepository.UpdateAsync(item);
-            UpdateUserResponse response = _mapper.Map<UpdateUserResponse>(item);
-
-            return new SuccessDataResult<UpdateUserResponse>(response, "User succesfully updated!");
+            throw new ValidationException("UserName already exist");
         }
+    }
 
-        return new ErrorDataResult<UpdateUserResponse>("User could not be found.");
+    public async Task CheckIfIdNotExist(int id)
+    {
+        var item = await _userRepository.GetAsync(p => p.Id == id);
+        if (item == null)
+        {
+            throw new NotFoundException("Object could not be found.");
+        }
     }
 }

@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace Business.Concretes;
 
-public class BlackListManager:IBlackListService
+public class BlackListManager : IBlackListService
 {
     private readonly IBlackListRepository _blackListRepository;
     private readonly IMapper _mapper;
@@ -33,7 +33,10 @@ public class BlackListManager:IBlackListService
     public async Task<IDataResult<CreatedBlackListResponse>> AddAsync(CreateBlackListRequest request)
     {
         BlackList blackList = _mapper.Map<BlackList>(request);
+
         await _blackListRepository.AddAsync(blackList);
+
+
         CreatedBlackListResponse response = _mapper.Map<CreatedBlackListResponse>(blackList);
 
         return new SuccessDataResult<CreatedBlackListResponse>(response, "Added Succesfuly");
@@ -63,7 +66,7 @@ public class BlackListManager:IBlackListService
 
     public async Task<IDataResult<List<GetAllBlackListResponse>>> GetAllAsync()
     {
-        var list = await _blackListRepository.GetAllAsync(p=>p.IsDeleted != true, include: p => p.Include(p => p.Applicant));
+        var list = await _blackListRepository.GetAllAsync(p => p.IsDeleted != true, include: p => p.Include(p => p.Applicant));
         List<GetAllBlackListResponse> responselist = _mapper.Map<List<GetAllBlackListResponse>>(list);
 
         return new SuccessDataResult<List<GetAllBlackListResponse>>(responselist, "Listed Succesfuly.");
@@ -71,7 +74,7 @@ public class BlackListManager:IBlackListService
 
     public async Task<IDataResult<GetByIdBlackListResponse>> GetByIdAsync(int request)
     {
-        var item = await _blackListRepository.GetAsync(predicate: p=> p.IsDeleted != true && p.Id == request, include: x => x.Include(p => p.Applicant));
+        var item = await _blackListRepository.GetAsync(predicate: p => p.IsDeleted != true && p.Id == request, include: x => x.Include(p => p.Applicant));
         if (item != null)
         {
             GetByIdBlackListResponse response = _mapper.Map<GetByIdBlackListResponse>(item);
@@ -82,7 +85,7 @@ public class BlackListManager:IBlackListService
 
     public async Task<IDataResult<GetByIdBlackListResponse>> GetByApplicantIdAsync(int request)
     {
-        var item = await _blackListRepository.GetAsync(predicate: p=>p.IsDeleted != true && p.ApplicantId == request, include: x => x.Include(p => p.Applicant));
+        var item = await _blackListRepository.GetAsync(predicate: p => p.IsDeleted != true && p.ApplicantId == request, include: x => x.Include(p => p.Applicant));
         if (item != null)
         {
             GetByIdBlackListResponse response = _mapper.Map<GetByIdBlackListResponse>(item);

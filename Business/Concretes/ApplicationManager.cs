@@ -2,6 +2,7 @@
 using Business.Abstracts;
 using Business.Requests.Application;
 using Business.Responses.Application;
+using Core.Exceptios.Types;
 using Core.Utilities.Results;
 using DataAccess.Abstracts;
 using Entities.Concretes;
@@ -29,13 +30,9 @@ public class ApplicationManager : IApplicationService
 
     public async Task<IDataResult<CreateApplicationResponse>> AddAsync(CreateApplicationRequest request)
     {
+        await CheckIfApplicantIsBlackListed(request.ApplicantId);
+
         Application application = _mapper.Map<Application>(request);
-
-        if (await _blackListService.GetByApplicantIdAsync(request.ApplicantId) != null)
-        {
-            return new ErrorDataResult<CreateApplicationResponse>("Applicant is blacklisted");
-        }
-
         await _applicationRepository.AddAsync(application);
         return new SuccessDataResult<CreateApplicationResponse>("Added Succesfuly");
     }
@@ -56,12 +53,12 @@ public class ApplicationManager : IApplicationService
     {
         var list = await _applicationRepository.GetAllAsync(include: x => x.Include(p => p.Applicant).Include(p => p.Bootcamp).Include(p => p.ApplicationState));
         List<GetAllApplicationResponse> responseList = _mapper.Map<List<GetAllApplicationResponse>>(list);
-        return new SuccessDataResult<List<GetAllApplicationResponse>>(responseList,"Listed Succesfuly.");
+        return new SuccessDataResult<List<GetAllApplicationResponse>>(responseList, "Listed Succesfuly.");
     }
 
     public async Task<IDataResult<GetByIdApplicationResponse>> GetByIdAsync(GetByIdApplicationRequest request)
     {
-        var item = await _applicationRepository.GetAsync(p=>p.Id == request.Id, include: x => x.Include(p => p.Applicant).Include(p => p.Bootcamp).Include(p => p.ApplicationState));
+        var item = await _applicationRepository.GetAsync(p => p.Id == request.Id, include: x => x.Include(p => p.Applicant).Include(p => p.Bootcamp).Include(p => p.ApplicationState));
         //var item = list.Where(p => p.Id == request.Id).FirstOrDefault();
         GetByIdApplicationResponse response = _mapper.Map<GetByIdApplicationResponse>(item);
 
@@ -74,7 +71,7 @@ public class ApplicationManager : IApplicationService
 
     public async Task<IDataResult<UpdateApplicationResponse>> UpdateAsync(UpdateApplicationRequest request)
     {
-        var item = await _applicationRepository.GetAsync(p=>p.Id == request.Id, include: x => x.Include(p => p.Applicant).Include(p => p.Bootcamp));
+        var item = await _applicationRepository.GetAsync(p => p.Id == request.Id, include: x => x.Include(p => p.Applicant).Include(p => p.Bootcamp));
         if (request.Id == 0 || item == null)
         {
             return new ErrorDataResult<UpdateApplicationResponse>("Application could not be found.");
@@ -86,5 +83,15 @@ public class ApplicationManager : IApplicationService
         UpdateApplicationResponse response = _mapper.Map<UpdateApplicationResponse>(item);
         return new SuccessDataResult<UpdateApplicationResponse>(response, "Application succesfully updated!");
 
+    }
+
+    //Business Rules
+    public async Task CheckIfApplicantIsBlackListed(int id)
+    {
+        var item = await _blackListService.GetByApplicantIdAsync(id);
+        if (item != null)
+        {
+            throw new BusinessException("Applicant is blacklisted");
+        }
     }
 }

@@ -39,7 +39,7 @@ public class HttpExceptionHandler : ExceptionHandler
     protected override Task HandleException(Types.ValidationException validationException)
     {
         Response.StatusCode = StatusCodes.Status400BadRequest;
-        string details = new ValidationProblemDetails(validationException.Errors).AsJson();
+        string details = new ValidationProblemDetails(validationException.Errors,validationException.Message).AsJson();
         return Response.WriteAsync(details);
     }
 
