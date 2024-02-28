@@ -33,7 +33,7 @@ public class ApplicantManager : IApplicantService
 
     public async Task<IDataResult<CreateApplicantResponse>> AddAsync(CreateApplicantRequest request)
     {
-        await CheckUserNameIfExist(request.UserName);
+        await CheckUserNameIfExist(request.UserName, null);
 
         Applicant applicant = _mapper.Map<Applicant>(request);
         await _applicantRepository.AddAsync(applicant);
@@ -74,7 +74,7 @@ public class ApplicantManager : IApplicantService
     {
         //Validation Check
         await CheckIfIdNotExist(request.Id);
-        await CheckUserNameIfExist(request.UserName);
+        await CheckUserNameIfExist(request.UserName,request.Id);
 
         var item = await _applicantRepository.GetAsync(p => p.Id == request.Id);
         _mapper.Map(request, item);
@@ -87,9 +87,10 @@ public class ApplicantManager : IApplicantService
     //
     //
     //Business Rules
-    public async Task CheckUserNameIfExist(string userName)
+    public async Task CheckUserNameIfExist(string userName, int? id)
     {
-        var item = await _applicantRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName));
+        //var item = await _applicantRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName));
+        var item = await _applicantRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName) && p.Id != id);
         if (item != null)
         {
             throw new ValidationException("UserName already exist");

@@ -31,7 +31,7 @@ public class UserManager : IUserService
 
     public async Task<IDataResult<CreateUserResponse>> AddAsync(CreateUserRequest request)
     {
-        await CheckUserNameIfExist(request.UserName);
+        await CheckUserNameIfExist(request.UserName, null);
 
         User user = _mapper.Map<User>(request);
         await _userRepository.AddAsync(user);
@@ -72,7 +72,7 @@ public class UserManager : IUserService
     public async Task<IDataResult<UpdateUserResponse>> UpdateAsync(UpdateUserRequest request)
     {
         await CheckIfIdNotExist(request.Id);
-        await CheckUserNameIfExist(request.UserName);
+        await CheckUserNameIfExist(request.UserName, request.Id);
 
         var item = await _userRepository.GetAsync(p => p.Id == request.Id);
 
@@ -87,9 +87,10 @@ public class UserManager : IUserService
     //
     //Business Rules
 
-    public async Task CheckUserNameIfExist(string userName)
+    public async Task CheckUserNameIfExist(string userName, int? id)
     {
-        var item = await _userRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName));
+        //var item = await _userRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName));
+        var item = await _userRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName) && p.Id != id);
         if (item != null)
         {
             throw new ValidationException("UserName already exist");

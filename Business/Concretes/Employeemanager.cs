@@ -33,7 +33,7 @@ public class Employeemanager : IEmployeeService
 
     public async Task<IDataResult<CreateEmployeeResponse>> AddAsync(CreateEmployeeRequest request)
     {
-        await CheckUserNameIfExist(request.UserName);
+        await CheckUserNameIfExist(request.UserName , null);
 
         Employee employee = _mapper.Map<Employee>(request);
         await _employeeRepository.AddAsync(employee);
@@ -74,7 +74,7 @@ public class Employeemanager : IEmployeeService
     public async Task<IDataResult<UpdateEmployeeResponse>> UpdateAsync(UpdateEmployeeRequest request)
     {
         await CheckIfIdNotExist(request.Id);
-        await CheckUserNameIfExist(request.UserName);
+        await CheckUserNameIfExist(request.UserName, request.Id);
 
         var item = await _employeeRepository.GetAsync(p => p.Id == request.Id);
 
@@ -89,9 +89,10 @@ public class Employeemanager : IEmployeeService
     //
     //Business Rules
 
-    public async Task CheckUserNameIfExist(string userName)
+    public async Task CheckUserNameIfExist(string userName, int? id)
     {
-        var item = await _employeeRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName));
+        //var item = await _employeeRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName));
+        var item = await _employeeRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName) && p.Id != id);
         if (item != null)
         {
             throw new ValidationException("UserName already exist");
