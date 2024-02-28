@@ -31,6 +31,7 @@ public class ApplicationManager : IApplicationService
     public async Task<IDataResult<CreateApplicationResponse>> AddAsync(CreateApplicationRequest request)
     {
         await CheckIfApplicantIsBlackListed(request.ApplicantId);
+        await CheckApplicantApplicationToBootcamp(request.ApplicantId, request.BootcampId);
 
         Application application = _mapper.Map<Application>(request);
         await _applicationRepository.AddAsync(application);
@@ -53,7 +54,7 @@ public class ApplicationManager : IApplicationService
     {
         var list = await _applicationRepository.GetAllAsync(include: x => x.Include(p => p.Applicant).Include(p => p.Bootcamp).Include(p => p.ApplicationState));
         List<GetAllApplicationResponse> responseList = _mapper.Map<List<GetAllApplicationResponse>>(list);
-        return new SuccessDataResult<List<GetAllApplicationResponse>>(responseList, "Listed Succesfuly.");
+        return new SuccessDataResult<List<GetAllApplicationResponse>>(responseList, "Listed Succesfully.");
     }
 
     public async Task<IDataResult<GetByIdApplicationResponse>> GetByIdAsync(GetByIdApplicationRequest request)
@@ -64,7 +65,7 @@ public class ApplicationManager : IApplicationService
 
         if (item != null)
         {
-            return new SuccessDataResult<GetByIdApplicationResponse>(response, "found Succesfuly.");
+            return new SuccessDataResult<GetByIdApplicationResponse>(response, "found Succesfully.");
         }
         return new ErrorDataResult<GetByIdApplicationResponse>("Application could not be found.");
     }
@@ -89,9 +90,18 @@ public class ApplicationManager : IApplicationService
     public async Task CheckIfApplicantIsBlackListed(int id)
     {
         var item = await _blackListService.GetByApplicantIdAsync(id);
+        if (item.Data != null)
+        {
+            throw new BusinessException("Applicant is blacklisted!");
+        }
+    }
+
+    public async Task CheckApplicantApplicationToBootcamp(int applicantId, int bootCampId)
+    {
+        var item = await _applicationRepository.GetAsync(p => p.ApplicantId == applicantId && p.BootcampId == bootCampId);
         if (item != null)
         {
-            throw new BusinessException("Applicant is blacklisted");
+            throw new BusinessException("Applicant has already applied to this bootcamp");
         }
     }
 }
