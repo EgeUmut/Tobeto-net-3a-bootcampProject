@@ -6,7 +6,6 @@ using Business.Requests.User;
 using Business.Responses.Applicant;
 using Business.Responses.BlackList;
 using Business.Responses.User;
-using Core.Exceptios.Types;
 using Core.Utilities.Results;
 using DataAccess.Abstracts;
 using DataAccess.Concretes.Repositories;
@@ -45,18 +44,24 @@ public class BlackListManager : IBlackListService
 
     public async Task<IResult> DeleteAsync(DeleteBlackListRequest request)
     {
-        await CheckBlackListNotExist(request.Id);
         var item = await _blackListRepository.GetAsync(p => p.Id == request.Id);
-        await _blackListRepository.DeleteAsync(item);
-        return new SuccessResult("Deleted Succesfuly");
+        if (item != null)
+        {
+            await _blackListRepository.DeleteAsync(item);
+            return new SuccessResult("Deleted Succesfuly");
+        }
+        return new ErrorResult("Delete Failed!");
     }
 
     public async Task<IResult> SoftDeleteAsync(DeleteBlackListRequest request)
     {
-        await CheckBlackListNotExist(request.Id);
         var item = await _blackListRepository.GetAsync(p => p.Id == request.Id);
-        await _blackListRepository.SoftDeleteAsync(item);
-        return new SuccessResult("SoftDeleted Succesfuly");
+        if (item != null)
+        {
+            await _blackListRepository.SoftDeleteAsync(item);
+            return new SuccessResult("SoftDeleted Succesfuly");
+        }
+        return new ErrorResult("SoftDelete Failed!");
     }
 
     public async Task<IDataResult<List<GetAllBlackListResponse>>> GetAllAsync()
@@ -69,11 +74,13 @@ public class BlackListManager : IBlackListService
 
     public async Task<IDataResult<GetByIdBlackListResponse>> GetByIdAsync(int request)
     {
-        await CheckBlackListNotExist(request);
         var item = await _blackListRepository.GetAsync(predicate: p => p.IsDeleted != true && p.Id == request, include: x => x.Include(p => p.Applicant));
-
-        GetByIdBlackListResponse response = _mapper.Map<GetByIdBlackListResponse>(item);
-        return new SuccessDataResult<GetByIdBlackListResponse>(response, "found Succesfuly.");
+        if (item != null)
+        {
+            GetByIdBlackListResponse response = _mapper.Map<GetByIdBlackListResponse>(item);
+            return new SuccessDataResult<GetByIdBlackListResponse>(response, "found Succesfuly.");
+        }
+        return new ErrorDataResult<GetByIdBlackListResponse>("BlackList could not be found.");
     }
 
     public async Task<IDataResult<GetByIdBlackListResponse>> GetByApplicantIdAsync(int request)
@@ -89,21 +96,17 @@ public class BlackListManager : IBlackListService
 
     public async Task<IDataResult<UpdatedBlackListResponse>> UpdateAsync(UpdateBlackListRequest request)
     {
-        await CheckBlackListNotExist(request.Id);
         var item = await _blackListRepository.GetAsync(p => p.Id == request.Id);
-        _mapper.Map(request, item);
-        await _blackListRepository.UpdateAsync(item);
-        UpdatedBlackListResponse response = _mapper.Map<UpdatedBlackListResponse>(item);
 
-        return new SuccessDataResult<UpdatedBlackListResponse>(response, "BlackList succesfully updated!");
-    }
-
-    public async Task CheckBlackListNotExist(int id)
-    {
-        var item = await _blackListRepository.GetAsync(p => p.Id == id);
-        if (item == null)
+        if (item != null)
         {
-            throw new BusinessException("BlackList could not be found");
+            _mapper.Map(request, item);
+            await _blackListRepository.UpdateAsync(item);
+            UpdatedBlackListResponse response = _mapper.Map<UpdatedBlackListResponse>(item);
+
+            return new SuccessDataResult<UpdatedBlackListResponse>(response, "BlackList succesfully updated!");
         }
+
+        return new ErrorDataResult<UpdatedBlackListResponse>("BlackList could not be found.");
     }
 }
