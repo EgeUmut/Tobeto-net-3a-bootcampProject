@@ -2,6 +2,7 @@
 using Core.Exceptios.Types;
 using Core.Helpers;
 using DataAccess.Abstracts;
+using DataAccess.Concretes.Repositories;
 
 namespace Business.BusinessRules;
 
@@ -18,11 +19,21 @@ public class UserBusinessRules: BaseBusinessRules
 
     public async Task CheckUserNameIfExist(string userName, int? id)
     {
-        //var item = await _userRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName));
-        var item = await _userRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName) && p.Id != id);
-        if (item != null)
+        if (id == null)
         {
-            throw new ValidationException("UserName already exist");
+            var item = await _userRepository.GetAsync(p => p.UserName == userName);
+            if (item != null)
+            {
+                throw new ValidationException("UserName already exist");
+            }
+        }
+        else
+        {
+            var item = await _userRepository.GetAsync(p => p.UserName == userName && p.Id != id);
+            if (item != null)
+            {
+                throw new ValidationException("UserName already exist");
+            }
         }
     }
 
