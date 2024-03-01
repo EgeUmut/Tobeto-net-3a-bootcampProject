@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Azure.Core;
 using Business.Abstracts;
+using Business.BusinessRules;
 using Business.Requests.Bootcamp;
 using Business.Responses.Bootcamp;
 using Business.Responses.BootcampState;
@@ -22,11 +23,13 @@ public class BootcampManager : IBootcampService
 {
     private readonly IBootcampRepository _bootcampRepository;
     private readonly IMapper _mapper;
+    private readonly BootcampBusinessRules _bootcampBusinessRules;
 
-    public BootcampManager(IBootcampRepository bootcampRepository, IMapper mapper)
+    public BootcampManager(IBootcampRepository bootcampRepository, IMapper mapper, BootcampBusinessRules bootcampBusinessRules)
     {
         _bootcampRepository = bootcampRepository;
         _mapper = mapper;
+        _bootcampBusinessRules = bootcampBusinessRules;
     }
 
     public async Task<IDataResult<CreateBootcampResponse>> AddAsync(CreateBootcampRequest request)
@@ -38,7 +41,7 @@ public class BootcampManager : IBootcampService
 
     public async Task<IResult> DeleteAsync(DeleteBootcampRequest request)
     {
-        await CheckBootCampNotExist(request.Id);
+        await _bootcampBusinessRules.CheckBootCampNotExist(request.Id);
         var item = await _bootcampRepository.GetAsync(p => p.Id == request.Id);
         await _bootcampRepository.DeleteAsync(item);
         return new SuccessResult("Deleted Succesfuly");
@@ -55,7 +58,7 @@ public class BootcampManager : IBootcampService
 
     public async Task<IDataResult<GetByIdBootcampResponse>> GetByIdAsync(GetByIdBootcampRequest request)
     {
-        await CheckBootCampNotExist(request.Id);
+        await _bootcampBusinessRules.CheckBootCampNotExist(request.Id);
         var item = await _bootcampRepository.GetAsync(p => p.Id == request.Id, include: x => x.Include(p => p.Instructor).Include(p => p.BootcampState));
         GetByIdBootcampResponse response = _mapper.Map<GetByIdBootcampResponse>(item);
         return new SuccessDataResult<GetByIdBootcampResponse>(response, "found Succesfuly.");
@@ -63,7 +66,7 @@ public class BootcampManager : IBootcampService
 
     public async Task<IDataResult<UpdateBootcampResponse>> UpdateAsync(UpdateBootcampRequest request)
     {
-        await CheckBootCampNotExist(request.Id);
+        await _bootcampBusinessRules.CheckBootCampNotExist(request.Id);
         var item = await _bootcampRepository.GetAsync(p => p.Id == request.Id);
         _mapper.Map(request, item);
         await _bootcampRepository.UpdateAsync(item);
@@ -72,12 +75,5 @@ public class BootcampManager : IBootcampService
         return new SuccessDataResult<UpdateBootcampResponse>(response, "Bootcamp succesfully updated!");
     }
 
-    public async Task CheckBootCampNotExist(int id)
-    {
-        var item = await _bootcampRepository.GetAsync(p => p.Id == id);
-        if (item == null)
-        {
-            throw new BusinessException("Bootcamp could not be found");
-        }
-    }
+
 }

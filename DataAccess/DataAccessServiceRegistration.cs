@@ -7,8 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Extensions;
 
 namespace DataAccess;
 
@@ -19,17 +21,24 @@ public static class DataAccessServiceRegistration
         services.AddDbContext<TobetoBootCampProjectContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IInstructorRepository, InstructorRepository>();
-        services.AddScoped<IApplicantRepository, ApplicantRepository>();
-        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
-        services.AddScoped<IApplicationRepository, ApplicationRepository>();
-        services.AddScoped<IApplicationStateRepository, ApplicationStateRepository>();
-        services.AddScoped<IBootcampRepository, BootcampRepository>();
-        services.AddScoped<IBootcampStateRepository, BootcampStateRepository>();
+        var assembly = Assembly.GetExecutingAssembly();
 
-        services.AddScoped<IBlackListRepository, BlackListRepository>();
+
+        //Repositories
+        services.RegisterAssemblyTypes(assembly).Where(p => p.ServiceType.Name.EndsWith("Repository"));
+
+        //services.AddScoped<IUserRepository, UserRepository>();
+        //services.AddScoped<IInstructorRepository, InstructorRepository>();
+        //services.AddScoped<IApplicantRepository, ApplicantRepository>();
+        //services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
+        //services.AddScoped<IApplicationRepository, ApplicationRepository>();
+        //services.AddScoped<IApplicationStateRepository, ApplicationStateRepository>();
+        //services.AddScoped<IBootcampRepository, BootcampRepository>();
+        //services.AddScoped<IBootcampStateRepository, BootcampStateRepository>();
+
+        //services.AddScoped<IBlackListRepository, BlackListRepository>();
 
         return services;
     }

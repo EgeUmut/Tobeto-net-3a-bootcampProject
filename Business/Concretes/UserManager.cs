@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Azure;
 using Business.Abstracts;
+using Business.BusinessRules;
 using Business.Requests.User;
 using Business.Responses.Application;
 using Business.Responses.User;
@@ -22,16 +23,18 @@ public class UserManager : IUserService
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
+    private readonly UserBusinessRules _userBusinessRules;
 
-    public UserManager(IUserRepository userRepository, IMapper mapper)
+    public UserManager(IUserRepository userRepository, IMapper mapper, UserBusinessRules userBusinessRules)
     {
         _userRepository = userRepository;
         _mapper = mapper;
+        _userBusinessRules = userBusinessRules;
     }
 
     public async Task<IDataResult<CreateUserResponse>> AddAsync(CreateUserRequest request)
     {
-        await CheckUserNameIfExist(request.UserName, null);
+        await _userBusinessRules.CheckUserNameIfExist(request.UserName, null);
 
         User user = _mapper.Map<User>(request);
         await _userRepository.AddAsync(user);
@@ -42,7 +45,7 @@ public class UserManager : IUserService
 
     public async Task<IResult> DeleteAsync(DeleteUserRequest request)
     {
-        await CheckIfIdNotExist(request.Id);
+        await _userBusinessRules.CheckIfIdNotExist(request.Id);
 
         var item = await _userRepository.GetAsync(p => p.Id == request.Id);
 
@@ -61,7 +64,7 @@ public class UserManager : IUserService
 
     public async Task<IDataResult<GetByIdUserResponse>> GetByIdAsync(GetByIdUserRequest request)
     {
-        await CheckIfIdNotExist(request.Id);
+        await _userBusinessRules.CheckIfIdNotExist(request.Id);
 
         var item = await _userRepository.GetAsync(p => p.Id == request.Id);
 
@@ -71,8 +74,8 @@ public class UserManager : IUserService
 
     public async Task<IDataResult<UpdateUserResponse>> UpdateAsync(UpdateUserRequest request)
     {
-        await CheckIfIdNotExist(request.Id);
-        await CheckUserNameIfExist(request.UserName, request.Id);
+        await _userBusinessRules.CheckIfIdNotExist(request.Id);
+        await _userBusinessRules.CheckUserNameIfExist(request.UserName, request.Id);
 
         var item = await _userRepository.GetAsync(p => p.Id == request.Id);
 
@@ -81,28 +84,5 @@ public class UserManager : IUserService
         UpdateUserResponse response = _mapper.Map<UpdateUserResponse>(item);
 
         return new SuccessDataResult<UpdateUserResponse>(response, "User succesfully updated!");
-    }
-
-    //
-    //
-    //Business Rules
-
-    public async Task CheckUserNameIfExist(string userName, int? id)
-    {
-        //var item = await _userRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName));
-        var item = await _userRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName) && p.Id != id);
-        if (item != null)
-        {
-            throw new ValidationException("UserName already exist");
-        }
-    }
-
-    public async Task CheckIfIdNotExist(int id)
-    {
-        var item = await _userRepository.GetAsync(p => p.Id == id);
-        if (item == null)
-        {
-            throw new NotFoundException("Object could not be found.");
-        }
     }
 }

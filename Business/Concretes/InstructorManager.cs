@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Business.Abstracts;
+using Business.BusinessRules;
 using Business.Requests.Employee;
 using Business.Requests.Instructor;
 using Business.Requests.User;
@@ -24,16 +25,18 @@ public class InstructorManager : IInstructorService
 {
     private readonly IInstructorRepository _ınstructorRepository;
     private readonly IMapper _mapper;
+    private readonly InstructorBusinessRules _ınstructorBusinessRules;
 
-    public InstructorManager(IInstructorRepository ınstructorRepository, IMapper mapper)
+    public InstructorManager(IInstructorRepository ınstructorRepository, IMapper mapper, InstructorBusinessRules ınstructorBusinessRules)
     {
         _ınstructorRepository = ınstructorRepository;
         _mapper = mapper;
+        _ınstructorBusinessRules = ınstructorBusinessRules;
     }
 
     public async Task<IDataResult<CreateInstructorResponse>> AddAsync(CreateInstructorRequest request)
     {
-        await CheckUserNameIfExist(request.UserName, null);
+        await _ınstructorBusinessRules.CheckUserNameIfExist(request.UserName, null);
 
         Instructor user = _mapper.Map<Instructor>(request);
         await _ınstructorRepository.AddAsync(user);
@@ -44,7 +47,7 @@ public class InstructorManager : IInstructorService
 
     public async Task<IResult> DeleteAsync(DeleteInstructorRequest request)
     {
-        await CheckIfIdNotExist(request.Id);
+        await _ınstructorBusinessRules.CheckIfIdNotExist(request.Id);
 
         var item = await _ınstructorRepository.GetAsync(p => p.Id == request.Id);
 
@@ -62,7 +65,7 @@ public class InstructorManager : IInstructorService
 
     public async Task<IDataResult<GetByIdInstructorResponse>> GetByIdAsync(GetByIdInstructorRequest request)
     {
-        await CheckIfIdNotExist(request.Id);
+        await _ınstructorBusinessRules.CheckIfIdNotExist(request.Id);
 
         var item = await _ınstructorRepository.GetAsync(p => p.Id == request.Id);
 
@@ -72,8 +75,8 @@ public class InstructorManager : IInstructorService
 
     public async Task<IDataResult<UpdateInstructorResponse>> UpdateAsync(UpdateInstructorRequest request)
     {
-        await CheckIfIdNotExist(request.Id);
-        await CheckUserNameIfExist(request.UserName, request.Id);
+        await _ınstructorBusinessRules.CheckIfIdNotExist(request.Id);
+        await _ınstructorBusinessRules.CheckUserNameIfExist(request.UserName, request.Id);
 
         var item = await _ınstructorRepository.GetAsync(p => p.Id == request.Id);
 
@@ -82,27 +85,5 @@ public class InstructorManager : IInstructorService
         UpdateInstructorResponse response = _mapper.Map<UpdateInstructorResponse>(item);
 
         return new SuccessDataResult<UpdateInstructorResponse>(response, "User succesfully updated!");
-    }
-    //
-    //
-    //Business Rules
-
-    public async Task CheckUserNameIfExist(string userName, int? id)
-    {
-        //var item = await _ınstructorRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName));
-        var item = await _ınstructorRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName) && p.Id != id);
-        if (item != null)
-        {
-            throw new ValidationException("UserName already exist");
-        }
-    }
-
-    public async Task CheckIfIdNotExist(int id)
-    {
-        var item = await _ınstructorRepository.GetAsync(p => p.Id == id);
-        if (item == null)
-        {
-            throw new NotFoundException("Object could not be found.");
-        }
     }
 }

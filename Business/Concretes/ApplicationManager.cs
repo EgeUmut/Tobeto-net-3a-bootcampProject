@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Business.Abstracts;
+using Business.BusinessRules;
 using Business.Requests.Application;
 using Business.Responses.Application;
 using Core.Exceptios.Types;
@@ -19,19 +20,19 @@ public class ApplicationManager : IApplicationService
 {
     private readonly IApplicationRepository _applicationRepository;
     private readonly IMapper _mapper;
-    private readonly IBlackListService _blackListService;
+    private readonly ApplicationBusinessRules _applicationBusinessRules;
 
-    public ApplicationManager(IApplicationRepository applicationRepository, IMapper mapper, IBlackListService blackListService)
+    public ApplicationManager(IApplicationRepository applicationRepository, IMapper mapper, ApplicationBusinessRules applicationBusinessRules)
     {
         _applicationRepository = applicationRepository;
         _mapper = mapper;
-        _blackListService = blackListService;
+        _applicationBusinessRules = applicationBusinessRules;
     }
 
     public async Task<IDataResult<CreateApplicationResponse>> AddAsync(CreateApplicationRequest request)
     {
-        await CheckIfApplicantIsBlackListed(request.ApplicantId);
-        await CheckApplicantApplicationToBootcamp(request.ApplicantId, request.BootcampId);
+        await _applicationBusinessRules.CheckIfApplicantIsBlackListed(request.ApplicantId);
+        await _applicationBusinessRules.CheckApplicantApplicationToBootcamp(request.ApplicantId, request.BootcampId);
 
         Application application = _mapper.Map<Application>(request);
         await _applicationRepository.AddAsync(application);
@@ -86,22 +87,5 @@ public class ApplicationManager : IApplicationService
 
     }
 
-    //Business Rules
-    public async Task CheckIfApplicantIsBlackListed(int id)
-    {
-        var item = await _blackListService.GetByApplicantIdAsync(id);
-        if (item.Data != null)
-        {
-            throw new BusinessException("Applicant is blacklisted!");
-        }
-    }
 
-    public async Task CheckApplicantApplicationToBootcamp(int applicantId, int bootCampId)
-    {
-        var item = await _applicationRepository.GetAsync(p => p.ApplicantId == applicantId && p.BootcampId == bootCampId);
-        if (item != null)
-        {
-            throw new BusinessException("Applicant has already applied to this bootcamp");
-        }
-    }
 }

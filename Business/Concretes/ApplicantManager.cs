@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Business.Abstracts;
+using Business.BusinessRules;
 using Business.Requests.Applicant;
 using Business.Requests.Employee;
 using Business.Requests.User;
@@ -24,16 +25,18 @@ public class ApplicantManager : IApplicantService
 {
     private readonly IApplicantRepository _applicantRepository;
     private readonly IMapper _mapper;
+    private readonly ApplicantBusinessRules _applicantBusinessRules;
 
-    public ApplicantManager(IApplicantRepository applicantRepository, IMapper mapper)
+    public ApplicantManager(IApplicantRepository applicantRepository, IMapper mapper, ApplicantBusinessRules applicantBusinessRules)
     {
         _applicantRepository = applicantRepository;
         _mapper = mapper;
+        _applicantBusinessRules = applicantBusinessRules;
     }
 
     public async Task<IDataResult<CreateApplicantResponse>> AddAsync(CreateApplicantRequest request)
     {
-        await CheckUserNameIfExist(request.UserName, null);
+        await _applicantBusinessRules.CheckUserNameIfExist(request.UserName, null);
 
         Applicant applicant = _mapper.Map<Applicant>(request);
         await _applicantRepository.AddAsync(applicant);
@@ -45,7 +48,7 @@ public class ApplicantManager : IApplicantService
     public async Task<IResult> DeleteAsync(DeleteApplicantRequest request)
     {
         //Business Rules
-        await CheckIfIdNotExist(request.Id);
+        await _applicantBusinessRules.CheckIfIdNotExist(request.Id);
 
         var item = await _applicantRepository.GetAsync(p => p.Id == request.Id);
         await _applicantRepository.DeleteAsync(item);
@@ -62,7 +65,7 @@ public class ApplicantManager : IApplicantService
 
     public async Task<IDataResult<GetByIdApplicantResponse>> GetByIdAsync(GetByIdApplicantRequest request)
     {
-        await CheckIfIdNotExist(request.Id);
+        await _applicantBusinessRules.CheckIfIdNotExist(request.Id);
 
         var item = await _applicantRepository.GetAsync(p => p.Id == request.Id);
         GetByIdApplicantResponse response = _mapper.Map<GetByIdApplicantResponse>(item);
@@ -73,8 +76,8 @@ public class ApplicantManager : IApplicantService
     public async Task<IDataResult<UpdateApplicantResponse>> UpdateAsync(UpdateApplicantRequest request)
     {
         //Validation Check
-        await CheckIfIdNotExist(request.Id);
-        await CheckUserNameIfExist(request.UserName,request.Id);
+        await _applicantBusinessRules.CheckIfIdNotExist(request.Id);
+        await _applicantBusinessRules.CheckUserNameIfExist(request.UserName,request.Id);
 
         var item = await _applicantRepository.GetAsync(p => p.Id == request.Id);
         _mapper.Map(request, item);
@@ -83,28 +86,4 @@ public class ApplicantManager : IApplicantService
 
         return new SuccessDataResult<UpdateApplicantResponse>(response, "Applicant succesfully updated!");
     }
-
-    //
-    //
-    //Business Rules
-    public async Task CheckUserNameIfExist(string userName, int? id)
-    {
-        //var item = await _applicantRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName));
-        var item = await _applicantRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName) && p.Id != id);
-        if (item != null)
-        {
-            throw new ValidationException("UserName already exist");
-        }
-    }
-
-    public async Task CheckIfIdNotExist(int id)
-    {
-        var item = await _applicantRepository.GetAsync(p => p.Id == id);
-        if (item == null)
-        {
-            throw new NotFoundException("Object could not be found.");
-        }
-    }
-
-
 }

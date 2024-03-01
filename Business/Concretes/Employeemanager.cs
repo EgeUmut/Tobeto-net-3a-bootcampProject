@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Business.Abstracts;
+using Business.BusinessRules;
 using Business.Requests.Applicant;
 using Business.Requests.Employee;
 using Business.Requests.User;
@@ -24,16 +25,18 @@ public class Employeemanager : IEmployeeService
 {
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IMapper _mapper;
+    private readonly EmployeeBusinessRules _employeeBusinessRules;
 
-    public Employeemanager(IEmployeeRepository employeeRepository, IMapper mapper)
+    public Employeemanager(IEmployeeRepository employeeRepository, IMapper mapper, EmployeeBusinessRules employeeBusinessRules)
     {
         _employeeRepository = employeeRepository;
         _mapper = mapper;
+        _employeeBusinessRules = employeeBusinessRules;
     }
 
     public async Task<IDataResult<CreateEmployeeResponse>> AddAsync(CreateEmployeeRequest request)
     {
-        await CheckUserNameIfExist(request.UserName , null);
+        await _employeeBusinessRules.CheckUserNameIfExist(request.UserName , null);
 
         Employee employee = _mapper.Map<Employee>(request);
         await _employeeRepository.AddAsync(employee);
@@ -44,7 +47,7 @@ public class Employeemanager : IEmployeeService
 
     public async Task<IResult> DeleteAsync(DeleteEmployeeRequest request)
     {
-        await CheckIfIdNotExist(request.Id);
+        await _employeeBusinessRules.CheckIfIdNotExist(request.Id);
 
         var item = await _employeeRepository.GetAsync(p => p.Id == request.Id);
 
@@ -63,7 +66,7 @@ public class Employeemanager : IEmployeeService
 
     public async Task<IDataResult<GetByIdEmployeeResponse>> GetByIdAsync(GetByIdEmployeeRequest request)
     {
-        await CheckIfIdNotExist(request.Id);
+        await _employeeBusinessRules.CheckIfIdNotExist(request.Id);
 
         var item = await _employeeRepository.GetAsync(p => p.Id == request.Id);
 
@@ -73,8 +76,8 @@ public class Employeemanager : IEmployeeService
 
     public async Task<IDataResult<UpdateEmployeeResponse>> UpdateAsync(UpdateEmployeeRequest request)
     {
-        await CheckIfIdNotExist(request.Id);
-        await CheckUserNameIfExist(request.UserName, request.Id);
+        await _employeeBusinessRules.CheckIfIdNotExist(request.Id);
+        await _employeeBusinessRules.CheckUserNameIfExist(request.UserName, request.Id);
 
         var item = await _employeeRepository.GetAsync(p => p.Id == request.Id);
 
@@ -83,28 +86,5 @@ public class Employeemanager : IEmployeeService
         UpdateEmployeeResponse response = _mapper.Map<UpdateEmployeeResponse>(item);
 
         return new SuccessDataResult<UpdateEmployeeResponse>(response, "Employee succesfully updated!");
-    }
-
-    //
-    //
-    //Business Rules
-
-    public async Task CheckUserNameIfExist(string userName, int? id)
-    {
-        //var item = await _employeeRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName));
-        var item = await _employeeRepository.GetAsync(p => p.UserName == SeoHelper.ToSeoUrl(userName) && p.Id != id);
-        if (item != null)
-        {
-            throw new ValidationException("UserName already exist");
-        }
-    }
-
-    public async Task CheckIfIdNotExist(int id)
-    {
-        var item = await _employeeRepository.GetAsync(p => p.Id == id);
-        if (item == null)
-        {
-            throw new NotFoundException("Object could not be found.");
-        }
     }
 }
