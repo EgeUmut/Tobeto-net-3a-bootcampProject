@@ -4,6 +4,7 @@ using DataAccess.Concretes.EntityFramework.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(TobetoBootCampProjectContext))]
-    partial class TobetoBootCampProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20240302135948_2MartImageDeneme")]
+    partial class _2MartImageDeneme
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -176,10 +179,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("EndDate");
 
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("InstructorId")
                         .HasColumnType("int")
                         .HasColumnName("InstructorId");
@@ -243,6 +242,43 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BootcampStates", (string)null);
+                });
+
+            modelBuilder.Entity("Entities.Concretes.Image", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BootcampId")
+                        .HasColumnType("int")
+                        .HasColumnName("BootcampId");
+
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeleteDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ImageUrl");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BootcampId");
+
+                    b.ToTable("BootcampImages", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Concretes.User", b =>
@@ -403,6 +439,17 @@ namespace DataAccess.Migrations
                     b.Navigation("Instructor");
                 });
 
+            modelBuilder.Entity("Entities.Concretes.Image", b =>
+                {
+                    b.HasOne("Entities.Concretes.Bootcamp", "Bootcamp")
+                        .WithMany("Images")
+                        .HasForeignKey("BootcampId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Bootcamp");
+                });
+
             modelBuilder.Entity("Entities.Concretes.Applicant", b =>
                 {
                     b.HasOne("Entities.Concretes.User", null)
@@ -433,6 +480,8 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("Entities.Concretes.Bootcamp", b =>
                 {
                     b.Navigation("Applications");
+
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("Entities.Concretes.Applicant", b =>

@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,4 +22,5 @@ public class Bootcamp : BaseEntity<int>
     public int BootcampStateId { get; set; }
     public BootcampState BootcampState { get; set; }
     public ICollection<Application> Applications { get; set; }
+    public string ImageUrl { get; set; }
 }

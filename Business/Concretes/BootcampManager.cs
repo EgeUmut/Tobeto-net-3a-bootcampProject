@@ -6,6 +6,7 @@ using Business.Requests.Bootcamp;
 using Business.Responses.Bootcamp;
 using Business.Responses.BootcampState;
 using Core.Exceptios.Types;
+using Core.Helpers;
 using Core.Utilities.Results;
 using DataAccess.Abstracts;
 using DataAccess.Concretes.Repositories;
@@ -35,6 +36,8 @@ public class BootcampManager : IBootcampService
     public async Task<IDataResult<CreateBootcampResponse>> AddAsync(CreateBootcampRequest request)
     {
         Bootcamp bootcamp = _mapper.Map<Bootcamp>(request);
+        var ImageUrl = FileHelper.Add(request.file, "/Bootcamp/");
+        bootcamp.ImageUrl = ImageUrl;
         await _bootcampRepository.AddAsync(bootcamp);
         return new SuccessDataResult<CreateBootcampResponse>("Added Succesfuly");
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,4 +14,5 @@ public class CreateBootcampRequest
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public int BootcampStateId { get; set; }
+    public IFormFile file { get; set; }
 }

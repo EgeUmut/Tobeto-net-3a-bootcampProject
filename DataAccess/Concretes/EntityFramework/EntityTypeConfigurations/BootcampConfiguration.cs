@@ -24,6 +24,7 @@ public class BootcampConfiguration : IEntityTypeConfiguration<Bootcamp>
         builder.HasOne(b => b.Instructor);
         builder.HasOne(p => p.BootcampState);
         builder.HasMany(p => p.Applications);
+        //builder.HasMany(x => x.Images);
 
     }
 }
