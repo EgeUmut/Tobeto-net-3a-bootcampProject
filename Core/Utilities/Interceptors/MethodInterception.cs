@@ -2,7 +2,7 @@
 
 namespace Core.Utilities.Interceptors;
 
-public class MethodInterception : MethodInterceptionBaseAttribute
+public abstract class MethodInterception : MethodInterceptionBaseAttribute
 {
     protected virtual void OnBefore(IInvocation ınvocation)
     {
@@ -14,12 +14,12 @@ public class MethodInterception : MethodInterceptionBaseAttribute
 
     }
 
-    protected virtual void onException(IInvocation ınvocation, System.Exception e)
+    protected virtual void OnException(IInvocation ınvocation, System.Exception e)
     {
 
     }
 
-    protected virtual void onSuccess(IInvocation ınvocation)
+    protected virtual void OnSuccess(IInvocation ınvocation)
     {
 
     }
@@ -37,14 +37,14 @@ public class MethodInterception : MethodInterceptionBaseAttribute
         {
 
             isSuccess = false;
-            onException(invocation, e);
+            OnException(invocation, e);
             throw;
         }
         finally
         {
             if (isSuccess)
             {
-                onSuccess(invocation);
+                OnSuccess(invocation);
             }
         }
 

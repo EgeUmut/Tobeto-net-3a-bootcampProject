@@ -1,6 +1,7 @@
 using Business;
 using Core.Exceptios.Extensions;
 using DataAccess;
+using Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ builder.Services.AddSwaggerGen();
 //Sql Configuration and DI 
 builder.Services.AddDataAccessServices(builder.Configuration);
 builder.Services.AddBusinessServices();
+builder.Services.AddCoreServices();
 
 var app = builder.Build();
 

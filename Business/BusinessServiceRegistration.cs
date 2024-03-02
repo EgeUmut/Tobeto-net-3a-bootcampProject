@@ -1,7 +1,9 @@
 ﻿using Business.Abstracts;
 using Business.Concretes;
-using Core.CrossCuttingConcerns;
+using Castle.DynamicProxy;
+using Core.CrossCuttingConcerns.BusinessRulesBase;
 using Core.Extensions;
+using Core.Utilities.Interceptors;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -17,8 +19,6 @@ public static class BusinessServiceRegistration
     public static IServiceCollection AddBusinessServices(this IServiceCollection services)
     {
         var assembly = Assembly.GetExecutingAssembly();
-
-        
 
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
@@ -40,7 +40,6 @@ public static class BusinessServiceRegistration
 
         //Business Rules
         services.AddSubClassesOfType(assembly, typeof(BaseBusinessRules));
-
         return services;
     }
 }

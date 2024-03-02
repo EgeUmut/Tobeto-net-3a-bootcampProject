@@ -1,4 +1,4 @@
-﻿using Core.CrossCuttingConcerns;
+﻿using Core.CrossCuttingConcerns.BusinessRulesBase;
 using Core.Exceptios.Types;
 using Core.Helpers;
 using DataAccess.Abstracts;

@@ -16,4 +16,5 @@ public interface IApplicationService
     public Task<IResult> DeleteAsync(DeleteApplicationRequest request);
     public Task<IDataResult<List<GetAllApplicationResponse>>> GetAllAsync();
     public Task<IDataResult<GetByIdApplicationResponse>> GetByIdAsync(GetByIdApplicationRequest request);
+    //public Task<IResult> AddTransactionalTest(CreateApplicationRequest request);
 }
