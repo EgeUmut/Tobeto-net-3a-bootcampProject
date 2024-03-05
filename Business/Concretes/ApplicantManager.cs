@@ -7,6 +7,8 @@ using Business.Requests.User;
 using Business.Responses.Applicant;
 using Business.Responses.Employee;
 using Business.Responses.User;
+using Core.Aspects.Autofac.Logging;
+using Core.CrossCuttingConcerns.Logging.SeriLog.Loggers;
 using Core.Exceptios.Types;
 using Core.Helpers;
 using Core.Utilities.Results;
@@ -34,6 +36,7 @@ public class ApplicantManager : IApplicantService
         _applicantBusinessRules = applicantBusinessRules;
     }
 
+    [LogAspect(typeof(MssqlLogger))]
     public async Task<IDataResult<CreateApplicantResponse>> AddAsync(CreateApplicantRequest request)
     {
         await _applicantBusinessRules.CheckUserNameIfExist(request.UserName, null);
@@ -41,10 +44,10 @@ public class ApplicantManager : IApplicantService
         Applicant applicant = _mapper.Map<Applicant>(request);
         await _applicantRepository.AddAsync(applicant);
         CreateApplicantResponse response = _mapper.Map<CreateApplicantResponse>(applicant);
-
         return new SuccessDataResult<CreateApplicantResponse>(response, "Added Succesfuly");
     }
 
+    [LogAspect(typeof(MssqlLogger))]
     public async Task<IResult> DeleteAsync(DeleteApplicantRequest request)
     {
         //Business Rules
@@ -54,7 +57,7 @@ public class ApplicantManager : IApplicantService
         await _applicantRepository.DeleteAsync(item);
         return new SuccessResult("Deleted Succesfuly");
     }
-
+    [LogAspect(typeof(MssqlLogger))]
     public async Task<IDataResult<List<GetAllApplicantResponse>>> GetAllAsync()
     {
         var list = await _applicantRepository.GetAllAsync();
@@ -62,7 +65,7 @@ public class ApplicantManager : IApplicantService
 
         return new SuccessDataResult<List<GetAllApplicantResponse>>(responselist, "Listed Succesfully.");
     }
-
+    [LogAspect(typeof(MssqlLogger))]
     public async Task<IDataResult<GetByIdApplicantResponse>> GetByIdAsync(GetByIdApplicantRequest request)
     {
         await _applicantBusinessRules.CheckIfIdNotExist(request.Id);
@@ -72,7 +75,7 @@ public class ApplicantManager : IApplicantService
         return new SuccessDataResult<GetByIdApplicantResponse>(response, "found Succesfully.");
 
     }
-
+    [LogAspect(typeof(MssqlLogger))]
     public async Task<IDataResult<UpdateApplicantResponse>> UpdateAsync(UpdateApplicantRequest request)
     {
         //Validation Check

@@ -1,4 +1,6 @@
-﻿namespace Business.Responses.Bootcamp;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Business.Responses.Bootcamp;
 
 public class GetByIdBootcampResponse
 {

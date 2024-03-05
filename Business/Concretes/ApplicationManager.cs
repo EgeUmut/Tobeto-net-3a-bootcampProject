@@ -4,7 +4,9 @@ using Business.BusinessRules;
 using Business.Requests.Application;
 using Business.Responses.Application;
 using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Logging;
 using Core.Aspects.Autofac.Transaction;
+using Core.CrossCuttingConcerns.Logging.SeriLog.Loggers;
 using Core.Utilities.Results;
 using DataAccess.Abstracts;
 using Entities.Concretes;
@@ -25,8 +27,9 @@ public class ApplicationManager : IApplicationService
         _applicationBusinessRules = applicationBusinessRules;
     }
 
-    [TransactionScopeAspect]
-    [CacheRemoveAspect("IApplicationService.Get")]
+    //[TransactionScopeAspect]
+    //[CacheRemoveAspect("IApplicationService.Get")]
+    [LogAspect(typeof(MssqlLogger))]
     public async Task<IDataResult<CreateApplicationResponse>> AddAsync(CreateApplicationRequest request)
     {
         await _applicationBusinessRules.CheckIfApplicantIsBlackListed(request.ApplicantId);
@@ -50,7 +53,7 @@ public class ApplicationManager : IApplicationService
         return new ErrorResult("Delete Failed!");
     }
 
-    [CacheAspect]
+    //[CacheAspect]
     public async Task<IDataResult<List<GetAllApplicationResponse>>> GetAllAsync()
     {
         var list = await _applicationRepository.GetAllAsync(include: x => x.Include(p => p.Applicant).Include(p => p.Bootcamp).Include(p => p.ApplicationState));
@@ -58,7 +61,7 @@ public class ApplicationManager : IApplicationService
         return new SuccessDataResult<List<GetAllApplicationResponse>>(responseList, "Listed Succesfully.");
     }
 
-    [CacheAspect]
+    //[CacheAspect]
     public async Task<IDataResult<GetByIdApplicationResponse>> GetByIdAsync(GetByIdApplicationRequest request)
     {
         var item = await _applicationRepository.GetAsync(p => p.Id == request.Id, include: x => x.Include(p => p.Applicant).Include(p => p.Bootcamp).Include(p => p.ApplicationState));
@@ -72,7 +75,7 @@ public class ApplicationManager : IApplicationService
         return new ErrorDataResult<GetByIdApplicationResponse>("Application could not be found.");
     }
 
-    [CacheRemoveAspect("IApplicationService.Get")]
+    //[CacheRemoveAspect("IApplicationService.Get")]
     public async Task<IDataResult<UpdateApplicationResponse>> UpdateAsync(UpdateApplicationRequest request)
     {
         var item = await _applicationRepository.GetAsync(p => p.Id == request.Id, include: x => x.Include(p => p.Applicant).Include(p => p.Bootcamp));

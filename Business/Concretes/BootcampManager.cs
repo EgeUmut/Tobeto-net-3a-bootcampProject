@@ -11,6 +11,7 @@ using Core.Utilities.Results;
 using DataAccess.Abstracts;
 using DataAccess.Concretes.Repositories;
 using Entities.Concretes;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -36,8 +37,7 @@ public class BootcampManager : IBootcampService
     public async Task<IDataResult<CreateBootcampResponse>> AddAsync(CreateBootcampRequest request)
     {
         Bootcamp bootcamp = _mapper.Map<Bootcamp>(request);
-        var ImageUrl = FileHelper.Add(request.file, "/Bootcamp/");
-        bootcamp.ImageUrl = ImageUrl;
+        bootcamp.ImageUrl = FileHelper.Add(request.file, "Bootcamp");
         await _bootcampRepository.AddAsync(bootcamp);
         return new SuccessDataResult<CreateBootcampResponse>("Added Succesfuly");
     }
@@ -46,6 +46,7 @@ public class BootcampManager : IBootcampService
     {
         await _bootcampBusinessRules.CheckBootCampNotExist(request.Id);
         var item = await _bootcampRepository.GetAsync(p => p.Id == request.Id);
+        //FileHelper.Delete(item.ImageUrl);
         await _bootcampRepository.DeleteAsync(item);
         return new SuccessResult("Deleted Succesfuly");
 
@@ -64,6 +65,7 @@ public class BootcampManager : IBootcampService
         await _bootcampBusinessRules.CheckBootCampNotExist(request.Id);
         var item = await _bootcampRepository.GetAsync(p => p.Id == request.Id, include: x => x.Include(p => p.Instructor).Include(p => p.BootcampState));
         GetByIdBootcampResponse response = _mapper.Map<GetByIdBootcampResponse>(item);
+
         return new SuccessDataResult<GetByIdBootcampResponse>(response, "found Succesfuly.");
     }
 

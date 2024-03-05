@@ -21,7 +21,7 @@ public static class CoreServiceRegistration
     {
 
         //Services
-        services.AddScoped<TransactionScopeAspect>();
+        //services.AddScoped<TransactionScopeAspect>();
 
 
         return services;

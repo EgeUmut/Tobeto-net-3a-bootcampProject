@@ -1,4 +1,6 @@
-﻿using Core.CrossCuttingConcerns.BusinessRulesBase;
+﻿using Core.Aspects.Autofac.Logging;
+using Core.CrossCuttingConcerns.BusinessRulesBase;
+using Core.CrossCuttingConcerns.Logging.SeriLog.Loggers;
 using Core.Exceptios.Types;
 using Core.Helpers;
 using DataAccess.Abstracts;
@@ -17,6 +19,7 @@ public class ApplicantBusinessRules : BaseBusinessRules
 
 
     //Business Rules
+    [LogAspect(typeof(MssqlLogger))]
     public async Task CheckUserNameIfExist(string userName, int? id)
     {
         if (id == null)

@@ -2,6 +2,9 @@ using Business;
 using Core.Exceptios.Extensions;
 using DataAccess;
 using Core;
+using Autofac.Extensions.DependencyInjection;
+using Autofac;
+using Business.DependencyResolves.Autofac;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +22,12 @@ builder.Services.AddSwaggerGen();
 //Sql Configuration and DI 
 builder.Services.AddDataAccessServices(builder.Configuration);
 builder.Services.AddBusinessServices();
-builder.Services.AddCoreServices();
+
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory()).ConfigureContainer<ContainerBuilder>(builder =>
+{
+    builder.RegisterModule(new AutofacBusinessModule());
+});
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
