@@ -7,6 +7,7 @@ using Business.Requests.User;
 using Business.Responses.Applicant;
 using Business.Responses.Employee;
 using Business.Responses.User;
+using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Logging;
 using Core.CrossCuttingConcerns.Logging.SeriLog.Loggers;
 using Core.Exceptios.Types;
@@ -37,6 +38,7 @@ public class ApplicantManager : IApplicantService
     }
 
     [LogAspect(typeof(MssqlLogger))]
+    [CacheRemoveAspect("IApplicantService.Get")]
     public async Task<IDataResult<CreateApplicantResponse>> AddAsync(CreateApplicantRequest request)
     {
         await _applicantBusinessRules.CheckUserNameIfExist(request.UserName, null);
@@ -58,6 +60,7 @@ public class ApplicantManager : IApplicantService
         return new SuccessResult("Deleted Succesfuly");
     }
     [LogAspect(typeof(MssqlLogger))]
+    [CacheAspect]
     public async Task<IDataResult<List<GetAllApplicantResponse>>> GetAllAsync()
     {
         var list = await _applicantRepository.GetAllAsync();

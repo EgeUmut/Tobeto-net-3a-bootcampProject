@@ -1,5 +1,7 @@
 ﻿using Core.CrossCuttingConcerns.Logging.SeriLog.ConfigurationModels;
+using Core.Utilities.IoC;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Core;
 using Serilog.Sinks.MSSqlServer;
@@ -26,15 +28,25 @@ public class MssqlLogger:LoggerServiceBase
 
     public MssqlLogger()
     {
-        //MssqlConfiguration logConfiguration = configuration.GetSection("SerilogConfigurations:MssqlConfiguration")
-        //    .Get<MssqlConfiguration>() ?? throw new Exception("");
+        var configuration = ServiceTool.ServiceProvider.GetRequiredService<IConfiguration>();
+        MssqlConfiguration logConfiguration = configuration.GetSection("SerilogConfigurations:MssqlConfiguration")
+           .Get<MssqlConfiguration>() ?? throw new Exception("");
+
         MSSqlServerSinkOptions sinkOptions = new()
-        { TableName = "Logs", AutoCreateSqlTable = true };
+        { TableName = logConfiguration.TableName, AutoCreateSqlTable = logConfiguration.AutoCreatedSqlTable };
 
         ColumnOptions columnOptions = new();
         global::Serilog.Core.Logger serilogConfig = new LoggerConfiguration().WriteTo
-            .MSSqlServer("server=(localdb)\\MSSQLLocalDB;database=TobetoBootCampProjectDb;trusted_connection=true", sinkOptions, columnOptions: columnOptions).CreateLogger();
+            .MSSqlServer(connectionString: logConfiguration.ConnectionString, sinkOptions: sinkOptions, columnOptions: columnOptions).CreateLogger();
         Logger = serilogConfig;
+
+        //MSSqlServerSinkOptions sinkOptions = new()
+        //{ TableName = "Logs", AutoCreateSqlTable = true };
+
+        //ColumnOptions columnOptions = new();
+        //global::Serilog.Core.Logger serilogConfig = new LoggerConfiguration().WriteTo
+        //    .MSSqlServer("server=(localdb)\\MSSQLLocalDB;database=TobetoBootCampProjectDb;trusted_connection=true", sinkOptions, columnOptions: columnOptions).CreateLogger();
+        //Logger = serilogConfig;
 
 
     }
