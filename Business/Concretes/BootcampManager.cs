@@ -46,7 +46,7 @@ public class BootcampManager : IBootcampService
     {
         await _bootcampBusinessRules.CheckBootCampNotExist(request.Id);
         var item = await _bootcampRepository.GetAsync(p => p.Id == request.Id);
-        //FileHelper.Delete(item.ImageUrl);
+        FileHelper.Delete(item.ImageUrl);
         await _bootcampRepository.DeleteAsync(item);
         return new SuccessResult("Deleted Succesfuly");
 

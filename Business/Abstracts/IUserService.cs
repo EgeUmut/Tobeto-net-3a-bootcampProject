@@ -1,6 +1,7 @@
 ﻿using Business.Requests.User;
 using Business.Responses.User;
 using Core.Utilities.Results;
+using Core.Utilities.Security.Entities;
 using Entities.Concretes;
 using System;
 using System.Collections.Generic;
@@ -17,5 +18,6 @@ public interface IUserService
     public Task<IResult> DeleteAsync(DeleteUserRequest request);
     public Task<IDataResult<List<GetAllUserResponse>>> GetAllAsync();
     public Task<IDataResult<GetByIdUserResponse>> GetByIdAsync(GetByIdUserRequest request);
+    public Task<IDataResult<User>> GetByMailAsync(string request);
 
 }

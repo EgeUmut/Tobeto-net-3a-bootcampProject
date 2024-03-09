@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Utilities.Security.Entities;
 
 namespace DataAccess.Concretes.EntityFramework.EntityTypeConfigurations;
 
@@ -21,11 +22,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.DateOfBirth).HasColumnName("DateOfBirth").IsRequired();
         builder.Property(x => x.NationalIdentity).HasColumnName("NationalIdentity").IsRequired();
         builder.Property(x => x.Email).HasColumnName("Email").IsRequired();
-        builder.Property(x => x.CreateDate).HasColumnName("CreateDate");
-        builder.Property(x => x.UpdateDate).HasColumnName("UpdateDate");
-        builder.Property(x => x.DeleteDate).HasColumnName("DeleteDate");
-        builder.Property(x => x.IsDeleted).HasColumnName("IsDeleted");
+        builder.Property(x => x.PasswordHash).HasColumnName("PasswordHash").IsRequired();
+        builder.Property(x => x.PasswordSalt).HasColumnName("PasswordSalt").IsRequired();
 
 
+        builder.HasMany(p => p.UserOperationClaims);
     }
 }

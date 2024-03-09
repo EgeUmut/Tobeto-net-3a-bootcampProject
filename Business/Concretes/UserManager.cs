@@ -8,6 +8,7 @@ using Business.Responses.User;
 using Core.Exceptios.Types;
 using Core.Helpers;
 using Core.Utilities.Results;
+using Core.Utilities.Security.Entities;
 using DataAccess.Abstracts;
 using DataAccess.Concretes.Repositories;
 using Entities.Concretes;
@@ -84,5 +85,15 @@ public class UserManager : IUserService
         UpdateUserResponse response = _mapper.Map<UpdateUserResponse>(item);
 
         return new SuccessDataResult<UpdateUserResponse>(response, "User succesfully updated!");
+    }
+
+    public async Task<IDataResult<User>> GetByMailAsync(string request)
+    {
+        var item = await _userRepository.GetAsync(p=>p.Email == request);
+        if (item == null)
+        {
+            return new ErrorDataResult<User>("User could not be found");
+        }
+        return new SuccessDataResult<User>(item, "User succesfully Found!");
     }
 }

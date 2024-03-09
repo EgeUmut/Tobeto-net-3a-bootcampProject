@@ -59,8 +59,8 @@ public class FileHelper
     //\wwwroot\Images\Bootcamp\9b88ff9750f7476f9dbcdecdca2226dd.jpg
         try
         {
-            //File.Delete($@"\wwwroot" + path);
-            File.Delete(path);
+            File.Delete(@$"wwwroot" + path);
+            //File.Delete(path);
             return new SuccessDataResult<string>("Successfully deleted file");
         }
         catch (Exception e)
@@ -79,6 +79,6 @@ public class FileHelper
         if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
 
         var result = directoryPath + creatingFileName;
-        return (result, $@"\Images{basePath}\{creatingFileName}");
+        return (result, $@"\Images\{basePath}\{creatingFileName}");
     }
 }

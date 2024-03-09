@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Business.Abstracts;
 using Business.Requests.User;
 using Business.Requests.Applicant;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tobeto_net_3a_bootcampProject.Controllers
 {
@@ -36,6 +37,7 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
             return HandleDataResult(user);
         }
 
+        [Authorize(Roles = "Applicant.List")]
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {

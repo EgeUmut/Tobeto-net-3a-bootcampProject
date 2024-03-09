@@ -10,4 +10,5 @@ public class GetByIdBootcampResponse
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public string BootcampStateName { get; set; }
+    public string ImageUrl { get; set; }
 }

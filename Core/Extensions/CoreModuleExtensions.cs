@@ -1,6 +1,7 @@
 ﻿using Core.CrossCuttingConcerns.Caching;
 using Core.CrossCuttingConcerns.Caching.Microsoft;
 using Core.CrossCuttingConcerns.Logging.SeriLog.Loggers;
+using Core.Utilities.Security.Jwt;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -20,6 +21,7 @@ public static class CoreModuleExtensions
         services.AddMemoryCache();
         services.AddTransient<ICacheManager,MemoryCacheManager>();
         services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddScoped<ITokenHelper, JwtHelper>();
         return services;
     }
 }
