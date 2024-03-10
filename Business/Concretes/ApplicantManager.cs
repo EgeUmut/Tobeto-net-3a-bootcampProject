@@ -44,6 +44,8 @@ public class ApplicantManager : IApplicantService
         await _applicantBusinessRules.CheckUserNameIfExist(request.UserName, null);
 
         Applicant applicant = _mapper.Map<Applicant>(request);
+        applicant.PasswordSalt = new byte[10];
+        applicant.PasswordHash = new byte[10];
         await _applicantRepository.AddAsync(applicant);
         CreateApplicantResponse response = _mapper.Map<CreateApplicantResponse>(applicant);
         return new SuccessDataResult<CreateApplicantResponse>(response, "Added Succesfuly");

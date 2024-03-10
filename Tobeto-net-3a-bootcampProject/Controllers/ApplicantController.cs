@@ -37,7 +37,7 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
             return HandleDataResult(user);
         }
 
-        [Authorize(Roles = "Applicant.List")]
+        //[Authorize(Roles = "Applicant.List")]
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {

@@ -20,6 +20,7 @@ public static class CoreModuleExtensions
         services.AddTransient<MongoDbLogger>();
         services.AddMemoryCache();
         services.AddTransient<ICacheManager,MemoryCacheManager>();
+        //services.AddTransient<ICacheManager, MemoryCacheManager>();
         services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
         services.AddScoped<ITokenHelper, JwtHelper>();
         return services;

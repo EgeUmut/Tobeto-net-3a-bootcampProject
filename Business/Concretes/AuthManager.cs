@@ -1,5 +1,6 @@
 ﻿using Business.Abstracts;
 using Business.Dtos.Register;
+using Core.Aspects.Autofac.Caching;
 using Core.Exceptios.Types;
 using Core.Utilities.Results;
 using Core.Utilities.Security.Dtos;
@@ -61,7 +62,9 @@ public class AuthManager : IAuthService
         var createAccessToken = await CreateAccessToken(user.Data);
         return new SuccessDataResult<AccessToken>(createAccessToken.Data, "Login Success");
     }
-
+    [CacheRemoveAspect("IApplicantService.Get")]
+    [CacheRemoveAspect("IEmployeetService.Get")]
+    [CacheRemoveAspect("IInstructorService.Get")]
     public async Task<IDataResult<AccessToken>> Register(UserForRegisterDto registerDto)
     {
         await UserEmailShouldBeNotExists(registerDto.Email);

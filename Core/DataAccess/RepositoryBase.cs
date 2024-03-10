@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 namespace Core.DataAccess;
 
-public class RepositoryBase<TEntity, TContext, TId> : IAsyncRepository<TEntity, TId>,IRepository<TEntity,TId>
+public class RepositoryBase<TEntity, TContext, TId> : IAsyncRepository<TEntity, TId>, IRepository<TEntity, TId>
     where TEntity : BaseEntity<TId>
     where TContext : DbContext, new()
 {
@@ -25,10 +25,11 @@ public class RepositoryBase<TEntity, TContext, TId> : IAsyncRepository<TEntity, 
 
     public async Task<TEntity> AddAsync(TEntity entity)
     {
-            entity.CreateDate = DateTime.Now; //created date added.
-            await _context.AddAsync(entity);
-            await _context.SaveChangesAsync();
-            return entity;
+        entity.CreateDate = DateTime.Now; //created date added.
+        await _context.AddAsync(entity);
+        await _context.SaveChangesAsync();
+        return entity;
+
     }
 
     public async Task<TEntity> DeleteAsync(TEntity entity)
@@ -88,10 +89,10 @@ public class RepositoryBase<TEntity, TContext, TId> : IAsyncRepository<TEntity, 
 
     public async Task<TEntity> UpdateAsync(TEntity entity)
     {
-            entity.UpdateDate = DateTime.UtcNow; //update date time enter
-            var UpdatedEntity = _context.Entry(entity);
-            UpdatedEntity.State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+        entity.UpdateDate = DateTime.UtcNow; //update date time enter
+        var UpdatedEntity = _context.Entry(entity);
+        UpdatedEntity.State = EntityState.Modified;
+        await _context.SaveChangesAsync();
 
         //_context.Entry(entity).State = EntityState.Modified;
         //await _context.SaveChangesAsync();
