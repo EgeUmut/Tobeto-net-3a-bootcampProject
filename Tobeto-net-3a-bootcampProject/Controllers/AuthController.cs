@@ -19,23 +19,23 @@ namespace Tobeto_net_3a_bootcampProject.Controllers
 
 
         [HttpPost("Employee register")]
-        public async Task<IActionResult> Register(EmployeeForRegisterDto registerDto)
+        public async Task<IActionResult> RegisterEmployee(EmployeeForRegisterDto registerDto)
         {
-            var result = await _authService.Register(registerDto);
+            var result = await _authService.RegisterEmployee(registerDto);
             return HandleDataResult(result);
         }
 
         [HttpPost("Instructor register")]
-        public async Task<IActionResult> Register(InstructorForRegisterDto registerDto)
+        public async Task<IActionResult> RegisterInstructor(InstructorForRegisterDto registerDto)
         {
-            var result = await _authService.Register(registerDto);
+            var result = await _authService.RegisterInstructor(registerDto);
             return HandleDataResult(result);
         }
 
         [HttpPost("Applicant register")]
-        public async Task<IActionResult> Register(ApplicantForRegisterDto registerDto)
+        public async Task<IActionResult> RegisterApplicant(ApplicantForRegisterDto registerDto)
         {
-            var result = await _authService.Register(registerDto);
+            var result = await _authService.RegisterApplicant(registerDto);
             return HandleDataResult(result);
         }
 

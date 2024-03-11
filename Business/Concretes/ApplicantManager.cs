@@ -52,6 +52,7 @@ public class ApplicantManager : IApplicantService
     }
 
     [LogAspect(typeof(MssqlLogger))]
+    [CacheRemoveAspect("IApplicantService.Get")]
     public async Task<IResult> DeleteAsync(DeleteApplicantRequest request)
     {
         //Business Rules
@@ -61,6 +62,7 @@ public class ApplicantManager : IApplicantService
         await _applicantRepository.DeleteAsync(item);
         return new SuccessResult("Deleted Succesfuly");
     }
+
     [LogAspect(typeof(MssqlLogger))]
     [CacheAspect]
     public async Task<IDataResult<List<GetAllApplicantResponse>>> GetAllAsync()
@@ -70,6 +72,7 @@ public class ApplicantManager : IApplicantService
 
         return new SuccessDataResult<List<GetAllApplicantResponse>>(responselist, "Listed Succesfully.");
     }
+
     [LogAspect(typeof(MssqlLogger))]
     public async Task<IDataResult<GetByIdApplicantResponse>> GetByIdAsync(GetByIdApplicantRequest request)
     {
@@ -80,7 +83,9 @@ public class ApplicantManager : IApplicantService
         return new SuccessDataResult<GetByIdApplicantResponse>(response, "found Succesfully.");
 
     }
+
     [LogAspect(typeof(MssqlLogger))]
+    [CacheRemoveAspect("IApplicantService.Get")]
     public async Task<IDataResult<UpdateApplicantResponse>> UpdateAsync(UpdateApplicantRequest request)
     {
         //Validation Check

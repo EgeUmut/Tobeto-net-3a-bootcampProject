@@ -62,83 +62,71 @@ public class AuthManager : IAuthService
         var createAccessToken = await CreateAccessToken(user.Data);
         return new SuccessDataResult<AccessToken>(createAccessToken.Data, "Login Success");
     }
-    [CacheRemoveAspect("IApplicantService.Get")]
-    [CacheRemoveAspect("IEmployeetService.Get")]
+
     [CacheRemoveAspect("IInstructorService.Get")]
-    public async Task<IDataResult<AccessToken>> Register(UserForRegisterDto registerDto)
+    public async Task<IDataResult<AccessToken>> RegisterInstructor(InstructorForRegisterDto registerDto)
     {
-        await UserEmailShouldBeNotExists(registerDto.Email);
-
-        if (registerDto is EmployeeForRegisterDto && registerDto != null)
+        byte[] passwordHash, passwordSalt;
+        HashingHelper.CreatePasswordHash(registerDto.Password, out passwordHash, out passwordSalt);
+        var instructor = new Instructor
         {
-            var employeeDto = registerDto as EmployeeForRegisterDto;
+            Email = registerDto.Email,
+            FirstName = registerDto.FirstName,
+            LastName = registerDto.LastName,
+            PasswordHash = passwordHash,
+            PasswordSalt = passwordSalt,
+            CompanyName = registerDto.CompanyName,
+            DateOfBirth = registerDto.DateOfBirth,
+            NationalIdentity = registerDto.NationalIdentity,
+            UserName = registerDto.UserName
+        };
+        await _ınstructorRepository.AddAsync(instructor);
+        var createAccessToken = await CreateAccessToken(instructor);
+        return new SuccessDataResult<AccessToken>(createAccessToken.Data, "Register Success");
+    }
 
-            byte[] passwordHash, passwordSalt;
-            HashingHelper.CreatePasswordHash(employeeDto.Password, out passwordHash, out passwordSalt);
-            var employee = new Employee
-            {
-                Email = employeeDto.Email,
-                FirstName = employeeDto.FirstName,
-                LastName = employeeDto.LastName,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                Position = employeeDto.Position,
-                DateOfBirth = employeeDto.DateOfBirth,
-                NationalIdentity = employeeDto.NationalIdentity,
-                UserName = employeeDto.UserName
-            };
-            await _employeeRepository.AddAsync(employee);
-            var createAccessToken = await CreateAccessToken(employee);
-            return new SuccessDataResult<AccessToken>(createAccessToken.Data, "Register Success");
-        }
-        else if (registerDto is InstructorForRegisterDto && registerDto != null)
+    [CacheRemoveAspect("IEmployeetService.Get")]
+    public async Task<IDataResult<AccessToken>> RegisterEmployee(EmployeeForRegisterDto registerDto)
+    {
+        byte[] passwordHash, passwordSalt;
+        HashingHelper.CreatePasswordHash(registerDto.Password, out passwordHash, out passwordSalt);
+        var employee = new Employee
         {
-            var instructorDto = registerDto as InstructorForRegisterDto;
+            Email = registerDto.Email,
+            FirstName = registerDto.FirstName,
+            LastName = registerDto.LastName,
+            PasswordHash = passwordHash,
+            PasswordSalt = passwordSalt,
+            Position = registerDto.Position,
+            DateOfBirth = registerDto.DateOfBirth,
+            NationalIdentity = registerDto.NationalIdentity,
+            UserName = registerDto.UserName
+        };
+        await _employeeRepository.AddAsync(employee);
+        var createAccessToken = await CreateAccessToken(employee);
+        return new SuccessDataResult<AccessToken>(createAccessToken.Data, "Register Success");
+    }
 
-            byte[] passwordHash, passwordSalt;
-            HashingHelper.CreatePasswordHash(instructorDto.Password, out passwordHash, out passwordSalt);
-            var instructor = new Instructor
-            {
-                Email = instructorDto.Email,
-                FirstName = instructorDto.FirstName,
-                LastName = instructorDto.LastName,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                CompanyName = instructorDto.CompanyName,
-                DateOfBirth = instructorDto.DateOfBirth,
-                NationalIdentity = instructorDto.NationalIdentity,
-                UserName = instructorDto.UserName
-            };
-            await _ınstructorRepository.AddAsync(instructor);
-            var createAccessToken = await CreateAccessToken(instructor);
-            return new SuccessDataResult<AccessToken>(createAccessToken.Data, "Register Success");
-        }
-        else if (registerDto is ApplicantForRegisterDto && registerDto != null)
+    [CacheRemoveAspect("IApplicantService.Get")]
+    public async Task<IDataResult<AccessToken>> RegisterApplicant(ApplicantForRegisterDto registerDto)
+    {
+        byte[] passwordHash, passwordSalt;
+        HashingHelper.CreatePasswordHash(registerDto.Password, out passwordHash, out passwordSalt);
+        var applicant = new Applicant
         {
-            var applicantDto = registerDto as ApplicantForRegisterDto;
-
-            byte[] passwordHash, passwordSalt;
-            HashingHelper.CreatePasswordHash(applicantDto.Password, out passwordHash, out passwordSalt);
-            var applicant = new Applicant
-            {
-                Email = applicantDto.Email,
-                FirstName = applicantDto.FirstName,
-                LastName = applicantDto.LastName,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                About = applicantDto.About,
-                DateOfBirth = applicantDto.DateOfBirth,
-                NationalIdentity = applicantDto.NationalIdentity,
-                UserName = applicantDto.UserName
-            };
-            await _applicantRepository.AddAsync(applicant);
-            var createAccessToken = await CreateAccessToken(applicant);
-            return new SuccessDataResult<AccessToken>(createAccessToken.Data, "Register Success");
-        }
-        else
-        {
-            return new ErrorDataResult<AccessToken>("Invalid type");
-        }
+            Email = registerDto.Email,
+            FirstName = registerDto.FirstName,
+            LastName = registerDto.LastName,
+            PasswordHash = passwordHash,
+            PasswordSalt = passwordSalt,
+            About = registerDto.About,
+            DateOfBirth = registerDto.DateOfBirth,
+            NationalIdentity = registerDto.NationalIdentity,
+            UserName = registerDto.UserName
+        };
+        await _applicantRepository.AddAsync(applicant);
+        var createAccessToken = await CreateAccessToken(applicant);
+        return new SuccessDataResult<AccessToken>(createAccessToken.Data, "Register Success");
     }
 
     private async Task UserEmailShouldBeNotExists(string email)

@@ -47,6 +47,7 @@ public class MemoryCacheManager : ICacheManager
 
         //Entries collection u bellekte bulup her bir cache elemanını gez.
         // aşağıdaki kurala uyan değerleri keysToRemove a alıp içini tek tek foreach ile gez key i uygun olanları kaldır.
+
         /*
         var cacheEntriesCollectionDefinition = typeof(MemoryCache).GetProperty("EntriesCollection", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         var cacheEntriesCollection = cacheEntriesCollectionDefinition.GetValue(_memoryCache) as dynamic;
